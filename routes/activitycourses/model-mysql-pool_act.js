@@ -157,6 +157,20 @@ function ReadActLessons(act_c_id,cb){
             });
     });
 }
+function ReadActLessonStud(al_id,cb){
+    pool.getConnection(function (err, connection) {
+        if (err) {
+            cb(err);
+            return;
+        }
+        connection.query(
+            'SELECT * FROM `active_attend` where al_id=? ', [al_id], (err, results) => {
+                if (err) { cb(err); return; }
+                cb(null, results);
+                connection.release();
+            });
+    });
+}
 function ReadClassStudAct(cno, cb) {
     pool.getConnection(function (err, connection) {
         if (err) {
@@ -313,7 +327,8 @@ module.exports = {
     ReadActivebyACTCID:ReadActivebyACTCID,
     ReadActLessons:ReadActLessons,
     CreateActLesson:CreateActLesson,
-    CloneActLessonStudList:CloneActLessonStudList
+    CloneActLessonStudList:CloneActLessonStudList,
+    ReadActLessonStud:ReadActLessonStud
 };
 
 if (module === require.main) {

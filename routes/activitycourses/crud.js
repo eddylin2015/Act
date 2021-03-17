@@ -83,7 +83,8 @@ router.get('/al_list/:book/add',authRequired,  (req, res, next) => {
             al_id:0,
             act_c_id:act_c_id,
             fn:fn,
-            al_datetime:al_datetime
+            al_datetime:al_datetime,
+            lesson:fn
         },
         action: 'Add'
     });    
@@ -103,7 +104,19 @@ router.post('/al_list/:book/add',authRequired, images.multer.single('image'), (r
     }
 );
 router.get('/al_list/:book/view/:alid',authRequired,  (req, res, next) => {
-    res.end("aaaa")
+    let act_c_id = req.params.book;
+    let alid = req.params.alid;
+    let fn = req.query.fn? req.query.fn:"";
+    getModel().ReadActLessonStud(alid, (err, entity) => {
+        if (err) { next(err); return; }
+        res.render('activitycourses/aa_view.pug', {
+            act_c_id:act_c_id,
+            al_id:alid,
+            profile: req.user,
+            books: entity,
+            fn:fn,
+        });
+    });
 });  
 router.get('/al_list/:book/edit/:alid',authRequired,  (req, res, next) => {
     res.end("aaaa")

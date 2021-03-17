@@ -18,10 +18,7 @@ html
             a(href="/internal/") 
               span(class="glyphicon") &#xe021
           li
-            a(href="/internal/activitycourses") 主頁
-          if act_c_id
-            li
-              a(href=`/internal/activitycourses/al_list/${act_c_id}`) 課表 id:#{act_c_id}            
+            a(href="/internal/activitycourses/#{act_c_id}") 課表
           //li
             a(href="/internal/markup/act/actlist") 活動列表
           //li

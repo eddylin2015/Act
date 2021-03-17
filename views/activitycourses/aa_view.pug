@@ -1,9 +1,9 @@
 extends ./base.pug
 block content 
   h3= fn
-  a(href=`/internal/activitycourses/al_list/${act_c_id}/add?fn=${fn}`, class='btn btn-success btn-sm')
+  a(href=`/internal/activitycourses/al_list/${act_c_id}/edit/${al_id}?fn=${fn}`, class='btn btn-success btn-sm')
     i.glyphicon.glyphicon-plus
-    span  Add lesson
+    span edit
 
   for book in books
     .media
