@@ -1,0 +1,63 @@
+﻿extends ./base.pug
+
+block content
+  //a(href="/internal/deptworklog/add", class=' border: 1px solid black;')
+    i.glyphicon.glyphicon-plus
+    span  Add Work Log
+  - var flag= profile.id == '2002024' ||  profile.id == '2016023' ||  profile.id == '2000003' 
+  table(style=' border: 1px solid black;')#desc
+    tr(style=' border: 1px solid black;')
+      th(width="36em;",padding="1em",style=' border: 1px solid black;') 日期
+      th(width="30em;",padding="1em",style=' border: 1px solid black;') 星期
+      th(width="65em;",padding="1em",style=' border: 1px solid black;') 第一節 
+      th(width="65em;",padding="1em",style=' border: 1px solid black;') 第二節 
+      th(width="65em;",padding="1em",style=' border: 1px solid black;') 第三節 
+      th(width="65em;",padding="1em",style=' border: 1px solid black;') 第四節 
+      th(width="65em;",padding="1em",style=' border: 1px solid black;') 第五節 
+      th(width="65em;",padding="1em",style=' border: 1px solid black;') 第六節 
+      th(width="65em;",padding="1em",style=' border: 1px solid black;') 第七節 
+      th(width="65em;",padding="1em",style=' border: 1px solid black;') 第八節 
+      th(width="65em;",padding="1em",style=' border: 1px solid black;') 備註1 
+    each book in books
+      tr(style='nth-child(even){background-color: #f2f2f2;}')
+        td(style=' border: 1px solid black;')
+          if book.logDate
+            a(href=`/internal/workgrid/${book.id}`)= ( book.logDate ) 
+            
+          else
+            a(href=`/internal/workgrid/${book.id}`)= ( '+' )
+        td(style=' border: 1px solid black;')
+          
+          if book.logDate
+            a(href=`/internal/workgrid/${book.id}`)=  (book.dw)
+        td(style=' border: 1px solid black;')
+          textarea.form-control(rows=3,readonly=true,style='margin:0;padding:0')= book.A
+        td(style=' border: 1px solid black;')
+          textarea.form-control(rows=3,readonly=true,style='margin:0;padding:0')= book.B
+        td(style=' border: 1px solid black;')
+          textarea.form-control(rows=3,readonly=true,style='margin:0;padding:0')= book.C
+        td(style=' border: 1px solid black;')
+          textarea.form-control(rows=3,readonly=true,style='margin:0;padding:0')= book.D
+        td(style=' border: 1px solid black;')
+          textarea.form-control(rows=3,readonly=true,style='margin:0;padding:0')= book.E
+        td(style=' border: 1px solid black;')
+          textarea.form-control(rows=3,readonly=true,style='margin:0;padding:0')= book.F
+        td(style=' border: 1px solid black;')
+          textarea.form-control(rows=3,readonly=true,style='margin:0;padding:0')= book.G
+        td(style=' border: 1px solid black;')
+          textarea.form-control(rows=3,readonly=true,style='margin:0;padding:0')= book.H
+        td(style=' border: 1px solid black;')
+          textarea.form-control(rows=3,readonly=true,style='margin:0;padding:0')= book.I
+  if !books.length
+    p No work log found.
+  if cflag
+    if nextPageToken
+      nav
+        ul.pager
+          li
+            if flag
+              a(href=`?pageToken=${encodeURIComponent(nextPageToken)}`) More
+    else
+      a(href="/internal/workgrid/add", class='btn btn-success btn-sm')
+        i.glyphicon.glyphicon-plus
+        span  Add Work Log

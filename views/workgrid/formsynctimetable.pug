@@ -1,0 +1,15 @@
+﻿extends ./base.pug
+
+block content
+  h3 Sync TimeTable
+  form(method="POST", enctype="multipart/form-data")
+    .form-group
+      label(for="timetable") Timetable Theme :
+      textarea.form-control( cols="30", rows="10", name="timetable", id="timetable", value="")
+    .form-group
+      label(for="slogDate") 起始日期 :
+      input.form-control(type="date", name="slogDate", id="slogDate", value=book.logDate)
+    .form-group
+      label(for="elogDate") 結束日期
+      input.form-control(type="date", name="elogDate", id="elogDate", value=book.logDate)
+    button.btn.btn-primary(type="submit") Submit

@@ -1,0 +1,53 @@
+﻿extends ./base.pug
+block content
+  script(src='/jquery-ui-dist/jquery-ui.min.js')    
+  link( href='/jquery-ui-dist/jquery-ui.min.css',rel='stylesheet' )    
+  link(rel='stylesheet', href='/stylesheets/blacktextarea.css')
+  div 預定電腦室 id: #{book.id}  #{action} 
+  -var tmp_=["一","二","三","四","五","六","七","八","#"]
+  -var tmp=tmp_[blesson]
+  form(method="POST", enctype="multipart/form-data")
+    .form-group
+      label(for="logDate") 日期:
+      input.form-control(type="text", name="logDate", id="logDate", value=book.logDate, readonly=true)
+    .form-group.hidden
+      label(for="Lesson") 節編號:
+      input.form-control(type="text", name="Lesson", id="Lesson", value=blesson, readonly=true)
+    .form-group
+      label(for="lesson_descri") 節
+      input.form-control(type="text", name="lesson_descri", id="lesson_descri", value=tmp, readonly=true)
+    .form-group
+      label(for="Room") 電腦室:
+      input.form-control(type="text", name="Room", id="Room", value=broom, readonly=true)
+    .form-group
+      label(for="Class") Class :
+      input.form-control(type="text", name="Class", id="Class", value="")
+      label(for="Teacher") STAF_REF Teacher:
+      input.form-control(type="text", name="Teacher", id="Teacher", value="")
+      label(for="Time") Time :
+      input.form-control(type="text", name="Time", id="Time", value="")
+    .form-group
+      label(for="CType") 分類 :
+      tabe
+        tr
+          td 
+            input(type="radio", name="CType", id="CType0", value="PL2")
+          td PL2___
+          td          
+            input(type="radio", name="CType", id="CType1", value="OTH",checked)      
+          td 其他__
+          td
+            input(type="text",name="CTypeNote")
+    button.btn.btn-success(type="submit") Save
+  script.
+    $(document).ready(function () {
+      /*/ "/api/stafinfo/NameOptList"
+      $.get( "/api/stafinfo/NameOptList", function( data ) {
+         for(let i=0;i<200;i++){arr.push(data[i].c_name);}
+         console.log(arr)
+         $( "#staf_ref" ).autocomplete({source:arr});//.focus(function(){if (this.value == "") $(this).autocomplete("search");});
+      }, "json" );
+    	*/
+      $( "#Teacher" ).autocomplete({source:"/internal/workgrid/NameOptList", minLength: 0	})//.focus(function(){if (this.value == "") $(this).autocomplete("search");});
+      $( "#Class" ).autocomplete({source:"/internal/workgrid/ClassOptList", minLength: 0	})//.focus(function(){if (this.value == "") $(this).autocomplete("search");});
+    });

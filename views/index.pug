@@ -1,0 +1,220 @@
+﻿extends layout
+block content
+  script(src='/javascripts/es_menu.js')
+  p Welcome to #{title}
+  p Welcome to #{title}
+  .row
+    .col-lg-2
+      ul(class="nav nav-pills nav-stacked")
+        li(class="dropdown")
+          a(class="dropdown-toggle", data-toggle="dropdown", href="#") 學習平台
+            span( class="caret")
+          ul(class="dropdown-menu", id="xuexi_mnu")
+            each val in mnu0
+              li
+                a(href= val.lnk)= val.n
+        //li(class="dropdown")
+          a(class="dropdown-toggle", data-toggle="dropdown", href="#") 學校共用資料
+            span( class="caret")
+          ul(class="dropdown-menu", id="xuexiao_mnu")
+            each val in mnu1
+              li
+                a(href= val.lnk)= val.n
+        li(class="dropdown")
+          a(class="dropdown-toggle", data-toggle="dropdown", href="#") 校內須知/表格
+            span( class="caret")
+          ul(class="dropdown-menu", id="xuexiaoform_mnu")
+            each val in mnu2
+              li
+                a(href= val.lnk)= val.n
+        li(class="dropdown")
+          a(class="dropdown-toggle", data-toggle="dropdown", href="#") 校內教務資料
+            span( class="caret")
+          ul(class="dropdown-menu", id="xuewu_mnu")
+            each val in mnu3
+              li
+                a(href= val.lnk)= val.n
+        if profile        
+          li(class="dropdown")
+            a(class="dropdown-toggle", data-toggle="dropdown", href="#") 內部功能
+              span( class="caret")
+            ul(class="dropdown-menu", id="inter_mnu")
+              each val in mnu4
+                li
+                  a(href= val.lnk)= val.n
+          li(class="dropdown")
+            a(class="dropdown-toggle", data-toggle="dropdown", href="#") 預約功能室
+              span( class="caret")
+            ul(class="dropdown-menu", id="bookingroom_mnu")
+              each val in mnu4
+                li
+                  a(href= val.lnk)= val.n
+          li(class="dropdown")
+            a(class="dropdown-toggle", data-toggle="dropdown", href="#") 成績表功能
+              span( class="caret")
+            ul(class="dropdown-menu", id="marksys_mnu")
+        -let flag=profile && profile.id && "2002024,2009007,2017008,2017035,1999002,1990001,1996009,2000006,2011003,2012002,2017023,2006011,2012021,2018008,2017030,1989002,2003006,2007033".indexOf(profile.id)>-1 
+        if(profile && flag)
+          li(class="dropdown")
+            a(class="dropdown-toggle", data-toggle="dropdown", href="#") 行政功能
+              span( class="caret")
+            ul(class="dropdown-menu", id="excu_sys_mnu")
+              each val in mnu_excu_dept
+                li
+                  a(href= val.lnk)= val.n
+        li(class="dropdown")
+          a( href="http://amdpv5/adminportal/") 影印打印服務查詢            
+        if(profile)
+        else
+          li(class="dropdown")
+            a( href="/login") Sign In
+    .col-lg-8
+      div(class="card mt-4")
+      div(id="myCarousel", class="carousel slide", data-ride="carousel")
+        ol(class="carousel-indicators")
+          li(data-target="#myCarousel", data-slide-to="0", class="active")
+          li(data-target="#myCarousel", data-slide-to="1")
+        div( class="carousel-inner")
+          div(class="item active")
+            img(src="/images/frontpage.jpg", alt="frontPage", style="width:100%;")
+          div( class="item")
+            img(src="/images/la.jpg", alt="Chicago", style="width:100%;")
+          a(class="left carousel-control", href="#myCarousel", data-slide="prev")
+            span( class="glyphicon glyphicon-chevron-left")
+            span( class="sr-only") Previous
+          a(class="right carousel-control", href="#myCarousel", data-slide="next")
+            span( class="glyphicon glyphicon-chevron-right")
+            span( class="sr-only") Next
+      div(class="container marketing")
+        div(class="row")
+          div(class="col-lg-2")
+            a(class="btn btn-secondary", href="/internal/bookingplayground/OneMonth/now", role="button") 
+              img(class="rounded-circle", src="/images/stadium.png", alt="booking ipad or Computer Room" ,width="100", height="100")
+            h3 場地預約
+            p 場地預約
+              a(class="btn btn-secondary", href="/internal/bookingplayground/OneMonth/now", role="button") View details &raquo;        
+          div(class="col-lg-2")
+            a(class="btn btn-secondary", href="/internal/workgrid/weekgridview", role="button") 
+              img(class="rounded-circle", src="/images/pcicon.png", alt="booking ipad or Computer Room" ,width="100", height="100")
+            h3 iPad 電腦室
+            small iPad 901/902 or 
+            br
+            small CM 309 /610/ 611.
+              a(class="btn btn-secondary", href="/internal/workgrid/weekgridview", role="button") View details &raquo;
+          div(class="col-lg-2")
+            a(class="btn btn-secondary", href="https://eclass.macaubaptist.edu.mo", role="button") 
+              img(class="rounded-circle", src="/images/eclass.png", alt="eclass" ,width="100", height="100")
+            h3 eClass
+            p
+              a(class="btn btn-secondary", href="https://eclass.macaubaptist.edu.mo", role="button") View details &raquo;              
+          div(class="col-lg-2")
+            a(class="btn btn-secondary", href="/internal/markup", role="button") 
+              img(class="rounded-circle", src="/images/coconut.png", alt="eclass" ,width="100", height="100")
+            h3 成績系統
+            p
+              a(href="/internal/discipline") 違規記錄 &raquo;              
+            p
+              a(href="/internal/disciplineExemption") 豁免違規 &raquo;              
+            -let actflag=profile && profile.id && "2002024,2012008,2012020".indexOf(profile.id)>-1 
+            if(profile && actflag)
+              p
+                small 活動課
+                a( href="/internal/markup/act") [act] &raquo;              
+            -let crsmngflag=profile && profile.id && "2002024,2003006,2006011".indexOf(profile.id)>-1 
+            if(profile && crsmngflag)
+              p
+                small 課程管理 
+                a( href="/internal/markup/crsmng?c=P" ) [P]
+                a( href="/internal/markup/crsmng?c=SG") [SG]
+                a( href="/internal/markup/crsmng?c=SC") [SC]
+            //p
+              a(class="btn btn-secondary", href="/internal/studinfoB01Form", role="button") 學生注冊表 &raquo;              
+            //p
+              a(class="btn btn-secondary", href="/internal/GridStafEval", role="button") 評核 &raquo;              
+          //div(class="col-lg-2")
+            -pyapplink=`/internal/kideval`
+            a(class="btn btn-secondary", href=pyapplink, role="button") 
+              img(class="rounded-circle", src="/images/kideval.png", alt="eclass" ,width="100", height="100")
+            h3 入學評估
+              p
+              a(class="btn btn-secondary", href="/internal/kidevaladmission/interview", role="button") 面試問卷 &raquo;              
+        div(class="row")   
+          div(class="col-lg-2")
+            -pyapplink=`https://${siteName}:8088`
+            a(class="btn btn-secondary", href=pyapplink, role="button") 
+              img(class="rounded-circle", src="/images/phpapp.png", alt="eclass" ,width="100", height="100")
+            h3 行政系統    
+          //div(class="col-lg-2")
+            a(class="btn btn-secondary", href="/internal/maths", role="button") 
+              img(class="rounded-circle", src="/images/mathsico.png", alt="eclass" ,width="100", height="100")
+            h3 Math
+            p
+              a(class="btn btn-secondary", href="/internal/maths", role="button") Maths Acco Eval &raquo;              
+
+          div(class="col-lg-2")
+            a(class="btn btn-secondary", href="/internal/classeval", role="button") 
+              img(class="rounded-circle", src="/images/report.png", alt="eclass" ,width="100", height="100")
+            h3 巡課系統   
+
+          div(class="col-lg-2")
+            -pyapplink=`http://${siteName}:85`
+            a(class="btn btn-secondary", href=pyapplink, role="button") 
+              img(class="rounded-circle", src="/images/folder-icon.png", alt="eclass" ,width="100", height="100")
+            h3 圖片數據上傳
+            p
+              a(class="btn btn-secondary", href="/internal/utils/jsontogrid", role="button") JSON2GRID &raquo;              
+            p
+              -pyapplink=`http://${siteName}:8080`
+              a(class="btn btn-secondary", href=pyapplink, role="button") 教職(內部) &raquo;              
+            p
+              a(class="btn btn-secondary", href="/internal/sdlc", role="button") SoftDevLifeCycle &raquo;  
+                     
+
+          div(class="col-lg-2")
+            a(class="btn btn-secondary", href="http://tv.mbc.edu.mo", role="button") 
+              img(class="rounded-circle", src="/images/tv-show.png", alt="eclass" ,width="100", height="100")
+            h3 校內直播        
+            p
+              a(class="btn btn-secondary", href="/countdown/index.html", role="button") 計時倒數 &raquo;  
+
+        div(class="row")                          
+          div(class="col-lg-4")
+            a(class="btn btn-secondary", href="/internal/activitycourses/", role="button") 
+              img(class="rounded-circle", src="/images/report.png", alt="booking ipad or Computer Room" ,width="120", height="120")
+            h3 活動課出席登記
+            p 
+            p 
+            p
+              //a(class="btn btn-secondary", href="/internal/ProWorkReport/", role="button") View details &raquo;
+
+        div(class="row")   
+          //div(class="col-lg-2")
+            a(class="btn btn-secondary", href="/countdown/index.html", role="button") 
+              img(class="rounded-circle", src="/images/timer.png", alt="eclass" ,width="100", height="100")
+            h3 Count Down   
+          //div(class="col-lg-2")
+            a(class="btn btn-secondary", href="https://mail.mbc.edu.mo/bc.html", role="button") 
+              img(class="rounded-circle", src="/images/barcodereader.png", alt="eclass" ,width="100", height="100")
+            h3 barcode        
+
+        div(class="row")                          
+          //div(class="col-lg-4")
+            a(class="btn btn-secondary", href="/internal/ProWorkReport/", role="button") 
+              img(class="rounded-circle", src="/images/report.png", alt="booking ipad or Computer Room" ,width="120", height="120")
+            h3 專職人員報告範本
+            p 
+            p 
+            p
+              a(class="btn btn-secondary", href="/internal/ProWorkReport/", role="button") View details &raquo;
+          
+    
+  footer
+    p( class="float-right")
+      a( href="#") Back to top
+    p 澳門浸信中學 &nbsp;版權所有&nbsp;Copyright&nbsp;&#169; 1999 Macau Baptist College.All Rights Reserved
+  script.
+    var myVar = setInterval(myTimer, 16000);
+    function myTimer() {
+      document.getElementById('myCarousel').style.display = 'none';
+      clearTimeout(myVar);
+    }

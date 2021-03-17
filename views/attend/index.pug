@@ -1,0 +1,59 @@
+﻿//- attend
+extends ./base.pug
+
+
+
+block content
+  mixin isoFmt(d)
+    span= d.toLocaleString()
+  h3 訪客
+  a(href="/internal/attend/add", class='btn btn-success btn-sm')
+    i.glyphicon.glyphicon-plus
+    span  Add Attend Rec
+  table#tbl
+    tr
+      td 描述
+      td 預約日期 時段
+      td 處理日期
+      td createdById
+      td createdBy
+    each book in books
+      //-var tmp=book.datet.toLocaleDateString("en-us")+" "+book.datet.toLocaleTimeString("en-us")
+      tr
+        td
+          a(href=`/internal/attend/${book.keyid}`, style="color: black;")
+            h4(class="bg-success")= (book.keyid + ": " + book.desc )
+        td= (book.I +" "+ book.O)
+        td
+          +isoFmt(book.checkdate)
+        td= book.createById
+        td
+          small= book.loginuser
+          br
+          small= tmp
+          small
+            +isoFmt( book.datet)
+            
+        
+          
+            
+  if !books.length
+    p No work log found.
+    
+  -var prePageToken = nextPageToken - 50 > 0 ? nextPageToken - 50 : 0
+  if nextPageToken
+    nav
+      ul.pager
+        li
+          a(href=`?pageToken=${encodeURIComponent(prePageToken)}`) Prev
+
+        li
+          a(href=`?pageToken=${encodeURIComponent(nextPageToken)}`) More
+
+  h5 註解
+  span(class="glyphicon glyphicon-star") Start_Qiz
+  span(class="glyphicon glyphicon-flag") End_Qiz
+  span(class="glyphicon glyphicon-ok") Close_Qiz__OK
+  span(class="glyphicon glyphicon-minus-sign") Close_Qiz_Reject
+  span(class="glyphicon glyphicon-pencil") Qiz_Process
+  

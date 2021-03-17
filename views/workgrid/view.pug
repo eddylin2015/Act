@@ -1,0 +1,112 @@
+//- Copyright 2017, Google, Inc.
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+extends ./base.pug
+
+block content
+  -function c_date(datestr){let aday=86400000;let x=new Date(datestr);let l=x-(new Date());return l> (aday*3) && l< (aday*32) ;}
+  h3 Work Log
+    small
+  if cflag
+    .btn-group
+      a(href=`/internal/workgrid/${book.id}/edit`, class='btn btn-primary btn-sm')
+        i.glyphicon.glyphicon-edit
+        span  Edit Work Log
+  .media
+    .media-left
+      img(src=book.imageUrl || "/images/deptworklog.jpg")
+    .media-body
+      h4= book.title
+        | &nbsp;
+        small= book.logDate
+      h5 By #{book.author||'unknown'}
+      -var tmpno_ =["一.","二.","三.","四.","五.","六.","七.","八."]
+      -var tmp_=["","","","","","","",""]
+      -tmp_[0]=book.A
+      -tmp_[1]=book.B
+      -tmp_[2]=book.C
+      -tmp_[3]=book.D
+      -tmp_[4]=book.E
+      -tmp_[5]=book.F
+      -tmp_[6]=book.G
+      -tmp_[7]=book.H
+      table#tbl
+        tr
+          td  
+            small 節
+          td
+            small 內容
+          td
+            small |_611_|
+          td
+            small |_309_|
+          td
+            small |_610_|
+          td
+            small |_IPAD車A_|
+          td
+            small |_IPAD車C_|
+          td(colspan=2)
+            small |需提前預約協調<br>與前車同地支援|
+
+
+        each val in [0,1,2,3,4,5,6,7]
+          -var elmv=tmp_[val]
+          -var numchar=tmpno_[val]
+          -var ctlelm=ctlflag[val]
+          tr
+            td= numchar
+            td
+              pre(class="pre-scrollable")= elmv
+            if cflag || c_date(book.logDate) 
+              td
+                if ctlelm.a
+                  .btn-group
+                    a(href=`/internal/workgrid/${book.id}/editlesson?lesson=${val}&room=611`, class='btn btn-primary btn-sm')
+                      span  611
+              td
+                if ctlelm.b
+                  .btn-group
+                    a(href=`/internal/workgrid/${book.id}/editlesson?lesson=${val}&room=309`, class='btn btn-primary btn-sm')
+                      span  309
+              td
+                if ctlelm.c
+                  .btn-group
+                    a(href=`/internal/workgrid/${book.id}/editlesson?lesson=${val}&room=610`, class='btn btn-primary btn-sm')
+                        span  610
+              td
+                if ctlelm.d
+                  .btn-group
+                    a(href=`/internal/workgrid/${book.id}/editlesson?lesson=${val}&room=901`, class='btn btn-primary btn-sm')
+                        span  901
+              td
+                if ctlelm.e
+                  .btn-group
+                    a(href=`/internal/workgrid/${book.id}/editlesson?lesson=${val}&room=902`, class='btn btn-primary btn-sm')
+                        span  902
+              td
+                if ctlelm.f
+                  .btn-group
+                    a(href=`/internal/workgrid/${book.id}/editlesson?lesson=${val}&room=903`, class='btn btn-primary btn-sm')
+                        span  903
+              td
+                if ctlelm.g
+                  .btn-group
+                    a(href=`/internal/workgrid/${book.id}/editlesson?lesson=${val}&room=904`, class='btn btn-primary btn-sm')
+                        span  904
+
+        tr
+          td 課後
+          td
+            pre(class="pre-scrollable")= '#'+  book.I
+      small Added by #{book.createdBy} Modifed by #{book.ModifiedBy}

@@ -1,0 +1,150 @@
+﻿extends layout
+  
+block content
+  //h1= title
+  p Welcome to #{title}
+  //link(rel='stylesheet', href='/stylesheets/carousel.css')
+  .container
+    .row
+     .col-lg-3
+      ul.nav.nav-pills.nav-stacked
+        li
+          a
+        li(class="active")
+         a(href="#") 主頁
+        li(class="dropdown")
+          a(class="dropdown-toggle",data-toggle="dropdown",href="#") 學習平台
+            span(class="caret")
+              ul(class="dropdown-menu")
+                li
+                  a(href= 'http://eclass.macaubaptist.edu.mo') eClass平台
+                li
+                  a(href= 'http://www.grwth.hk/') GRWTH平台
+                li
+                  a(href= 'http://www.flip.hk/') FLIP流動學習平台
+                li
+                  a(href= 'http://202.175.185.186/it-school/') Myit-School學習平台
+                li
+                  a(href= 'http://smark.myid.com.hk/') SMark平台
+        li(class="dropdown")
+          a(class="dropdown-toggle",data-toggle="dropdown",href="#") 校內出版物 
+            span(class="caret")
+              ul(class="dropdown-menu")
+                li
+                  a(href='http://202.175.185.186/it-school/mbc/mrp/mrp-index.htm') 月報
+        li(class="dropdown")
+          a(class="dropdown-toggle",data-toggle="dropdown",href="#") 校內專區 
+            span(class="caret")
+              ul(class="dropdown-menu")
+                li
+                  a(href='http://202.175.185.186/it-school/mbc/association/sec/disp/disp-index.htm') 德育輔導專區
+                li
+                  a(href='http://mbcmath2017.wordpress.com') 數學專區
+                li
+                  a(href='http://202.175.185.186/it-school/mbc/association/sec/it/it-index.htm') 資訊科技專區
+                li
+                  a(href='http://202.175.185.186/it-school/mbc/hw/shw/studhw.htm') 學生作品專區
+                li
+                  a(href='http://202.175.185.186/it-school/mbc/association/sec/pe/pe-index.htm') 校運會及環山跑記錄
+                li
+                  a(href='http://202.175.185.186/it-school/mbc/frame4/frame4.html') 學校氣象訊息
+        li(class="dropdown")
+          a(class="dropdown-toggle",data-toggle="dropdown",href="#") 學校相關團體 
+            span(class="caret")
+              ul(class="dropdown-menu")
+                li
+                  a(href='http://202.175.185.186/it-school/mbc/pta/pta-index.htm') 家長教師會
+                li
+                  a(href='http://202.175.185.186/it-school/mbc/association/sec/aosa/aosa-index.htm') 校友會
+        li(class="dropdown")
+          a(class="dropdown-toggle",data-toggle="dropdown",href="#") 教學參考資料
+            span(class="caret")
+              ul(class="dropdown-menu")
+                li
+                  a(href='http://202.175.185.186/it-school/mbc/association/sec/it/teaching-ref.htm') 教學參考資料
+        li(class="dropdown")
+          a(class="dropdown-toggle",data-toggle="dropdown",href="#") 合作伙伴 
+            span(class="caret")
+              ul(class="dropdown-menu")
+                li
+                  a(href='http://www.ipm.edu.mo/') <b>澳門理工學院</b><br><small>藝術高等學校<br>體育暨運高等學校</small>
+                li
+                  a(href='http://www.tut.edu.tw/') <b>台南應用科技大學</b><br><small>藝術學院</small>
+                li
+                  a(href='http://www.xhcom.edu.cn/') <b>廣州星海音樂學院</b><br>&nbsp;
+                li
+                  a(href='http://www.tut.edu.tw/') <b>台南應用科技大學</b><br><small>藝術學院</small>
+                li
+                  a(href='http://www.pacifichills.net/') <b>Pacific Hills Christian School</b><br>&nbsp;
+                li
+                  a(href='http://www2.kwnc.edu.mo/') <b>澳門鏡湖護理學院</b><br>&nbsp;
+        if profile 
+          li(class="dropdown")
+            a(class="dropdown-toggle",data-toggle="dropdown",href="#") 內部功能
+              span(class="caret")
+                ul(class="dropdown-menu")
+                  li
+                    a(href='/internal/profile') profile
+                  if profile.email 
+                     if profile.email == "lammou@mail.mbc.edu.mo"
+                       li
+                         a(href='/internal/dashboard') dashboard
+                     
+
+     .col-lg-9
+       .card.mt-4
+         <br>
+         <table><tr><td>
+           <font size="3">校訓:如今常存的有<font color="#0000ff">信</font>、有<font color="#0000ff">望</font>、有<font color="#0000ff">愛</font>，這三樣其中最大的是<font color="#ff0000">愛</font>。</font><font size="2">(哥林多前書十三章十三節)</font>
+           <td>
+           <div align=right>
+             <iframe src="https://www.dsej.gov.mo/~webdsej/www/tvshow/ppt/weather-pic-dsej.php" height="30" width="400" frameborder=0 scrolling="no" marginheight="0" marginwidth="0" allowtransparency="true"></iframe>
+           </div>
+         </table>
+         <div id="myCarousel" class="carousel slide" data-ride="carousel">
+         <!-- Indicators -->
+         <ol class="carousel-indicators">
+           <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+           <li data-target="#myCarousel" data-slide-to="1"></li>
+           <li data-target="#myCarousel" data-slide-to="2"></li>
+         </ol>
+         <!-- Wrapper for slides -->
+         <div class="carousel-inner">
+         <div class="item active">
+         <img src="/images/1819newapply.jpg" alt="Los Angeles" style="width:100%;">
+         </div>
+         <div class="item">
+         <img src="/images/chicago.jpg" alt="Chicago" style="width:100%;">
+         </div>
+         <div class="item">
+         <img src="/images/la.jpg" alt="Chicago" style="width:100%;">
+         </div>
+         </div>
+         <p></p>
+         <!-- Left and right controls -->
+         <a class="left carousel-control" href="#myCarousel" data-slide="prev">
+         <span class="glyphicon glyphicon-chevron-left"></span>
+         <span class="sr-only">Previous</span>
+         </a>
+         <a class="right carousel-control" href="#myCarousel" data-slide="next">
+         <span class="glyphicon glyphicon-chevron-right"></span>
+         <span class="sr-only">Next</span>
+         </a>
+         </div>
+         </div>
+         </div>
+         </div>
+         <div class="container marketing">
+         <!-- START THE FEATURETTES -->
+         <hr class="featurette-divider">
+         <!-- /END THE FEATURETTES -->
+         <!-- FOOTER -->
+         <footer>
+         <p class="float-right"><a href="#">Back to top</a></p>
+         <p>澳門浸信中學 &nbsp;版權所有&nbsp;Copyright&nbsp;&#169; 1999 Macau Baptist College.All Rights Reserved</p>
+         </footer>
+
+         </div>
+         </body>
+         </html>
+  

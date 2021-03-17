@@ -1,0 +1,49 @@
+//workgrid
+doctype html
+html
+  head
+    title Week Grid
+    meta(charset='utf-8')
+    meta(name="viewport", content="width=device-width, initial-scale=1")
+    link(rel='stylesheet', href='/stylesheets/bootstrap.min.css')
+    script(src='/javascripts/jquery.js')
+    script(src='/javascripts/bootstrap.js')
+    link(rel='stylesheet', href='/stylesheets/main.css')
+  body
+    .navbar.navbar-default
+      .container
+        .navbar-header
+          .navbar-brand 電腦室預約看板
+        ul.nav.navbar-nav
+          li
+            a(href="/internal/")
+              span(class="glyphicon") &#xe021
+          li
+            a(href="/internal/workgrid/weekgrid") 周表
+          if cflag
+            li
+              a(href="/internal/workgrid/week") 日表
+            li
+              a(href="/internal/workgrid/records") 記錄
+            li
+              a(href="/internal/workgrid/formsynctimetable") 更新表
+            li
+              a(href="/internal/workgrid/sync") SyncTody           
+          li(class="dropdown")
+            a(class="dropdown-toggle", data-toggle="dropdown", href="#" )  時間表PDF
+              span(class="caret")
+                ul(class="dropdown-menu",id="GRID_UTILS")
+                  li
+                    a(href="/doc/1920_IT教學安排_(20190920A).pdf",target="_blank") ComputerRoom_20190829
+        p.navbar-text.navbar-right
+          if profile
+            if profile.image
+              img.img-circle(src=profile.image, width=24)
+            span #{profile.displayName} &nbsp;
+              a(href='/logout') (logout)
+          else
+            a(href=`/login?redirect=${originurl}`) Login
+.container
+  block content
+
+  

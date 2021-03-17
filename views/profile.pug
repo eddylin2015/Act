@@ -1,0 +1,95 @@
+extends layout
+  
+block content
+  <div class="container">
+  
+  p &nbps;
+  p &nbps;
+
+  h1= title
+  .row
+    .col-lg-2
+        p
+          a(href="/internal/amdpv5") 影印機用量 PDB
+        p
+          a(href="/internal/dashboard") 儀表板 DB
+        p
+          a(href="#")#HELLOIIS hello IIS
+        -var auth_= profile.id == '2002024' || profile.id == '1999002'  || profile.id == '2016023' ||   profile.id == '2000003'
+        if auth_
+          p
+            a(href="/internal/markup/statisticsengtotal") 中英數總表
+          p
+            a(href="/internal/markup/statisticsmarktotal") 總表名次表
+          p
+            a(href="/internal/localnews") 本地新聞 News
+          p
+            a(href="/internal/azwg") 流量日誌 WG 
+          p
+            a(href="/internal/dashboard/markreportlistnodejs") 成績表檔案 MR
+          p
+            a(href="/internal/dashboard/TeacherList") 教師表
+          p
+            a(href="/internal/dashboard/StaffList") 職員表
+            a(href="/internal/attend/tags_staf_list_data.json") .J.
+            //a(href="/internal/attend/tags_staf_gs_data.tbl") GS.T.
+            //a(href="/internal/attend/tags_staf_gs_data.json") .J.
+          p
+            a(href="/internal/dashboard/StudList") 學生表
+            a(href="/internal/dashboard/StudListCurr") 學生表_CURRENT
+            a(href="/internal/dashboard/GrpStafList") 群組表
+            a(href="/internal/attend/tags_stud_list_data.json") .J.
+            a(href="/internal/attend/tags_stud_gs_data.tbl") GS.T.
+            a(href="/internal/attend/tags_stud_gs_data.json") .J.
+          p
+            a(href="/internal/dashboard/StafCerts") 進修時數
+            br
+            a(href="/internal/dashboard/StafEvals") 評核交叉表
+            
+    .col-lg-8
+        p Welcome to #{title} Profile
+        H4 SPORT GROUP 
+        ul
+          -var sportgp_auth = profile.id == '2005011'|| profile.id == '2002024';
+          if sportgp_auth
+            li 
+              a(href='/internal/execudept/sportgroup') 最新一屇分數
+          if profile.id=='2002024'    
+            li
+              a(href='/internal/kidevaldatabackup/exptxt') kideval json download
+            li
+              a(href='/internal/kidevaldatabackup/expjson') kideval json              
+            li
+              a(href='/internal/kidevaldatabackup/expcsv') kideval xls              
+          
+        H4 PERSONAL INFO    
+        p id: #{profile.id}
+        if profile.image
+          img.img-circle(src=profile.image, width=124)
+        p displayName: #{profile.displayName}
+        p username: #{profile.username} 
+        p email: #{profile.email} 
+        ul
+          li
+            a(href="/internal/dashboard/sharefiles/myfolder") 個人檔案
+          li
+            a(href="/internal/dashboard/sharefiles/markreportlistnodejs") 上傳個人檔案
+          li
+            a(href="/internal/dashboard/teamfiles/teamfolder") TEAM檔案
+
+          li
+            -link=`http://${siteName}:85/books/`
+            a(href=link) flask !#{siteName}!
+        p
+          a(href="/internal/logout") Logout
+  script.
+    $(document).ready(function(){
+      $('#HELLOIIS').click(function(){
+        window.open("http://info.mbc.edu.mo:8082/api/KASSESS/echo?hello=HELLOISS"+Math.random());   
+      });
+      
+    });              
+
+        
+           
+          

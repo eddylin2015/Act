@@ -1,0 +1,31 @@
+﻿extends ./base.pug
+
+block content
+  h3 Job Note Search
+  form(method="POST", enctype="multipart/form-data")
+    .form-group.hidden
+      label(for="title") 標題
+      input.form-control(type="text", name="title", id="title", value=book.title)
+    .form-group
+      label(for="author") Author
+      input.form-control(type="text", name="author", id="author", value=book.author)
+    .form-group
+      label(for="slogDate") 起始日期
+      input.form-control(type="date", name="slogDate", id="slogDate", value=book.logDate)
+    .form-group
+      label(for="elogDate") 結束日期
+      input.form-control(type="date", name="elogDate", id="elogDate", value=book.logDate)
+    .checkbox
+      label
+        input(type="checkbox",name="deptlog", id="deptlog", value=1, checked=  book.deptlog > 0 ? true : false )
+        | 部門支援
+      label
+        input(type="checkbox",name="scholog", id="scholog", value=1, checked=  book.scholog > 0 ? true : false) 
+        | 回複記錄
+    .form-group.hidden
+      label(for="createdBy") Created by 
+      input.form-control(type="text", name="createdBy", id="createdBy", value=book.createdBy)
+    .form-group.hidden
+      label(for="createdById") Created by ID
+      input.form-control(type="text", name="createdById", id="createdById", value=book.createdById)
+    button.btn.btn-primary(type="submit") Submit

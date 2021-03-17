@@ -1,0 +1,266 @@
+﻿extends ./base.pug
+
+block content
+  meta( HTTP-EQUIV="refresh", CONTENT="300")
+  
+  script(src='/javascripts/cool/webtoolkit.aim.js')
+  link(rel='stylesheet', href='/jquery-ui-dist/jquery-ui.min.css')
+  script(src='/jquery-ui-dist/jquery-ui.min.js')     
+  
+  style.
+    div.container{ margin:0px; }  
+  script.
+    var cnt=0;
+    function hidshow(){
+      var tbl="desc";
+        $( '#'+tbl ).find('tr').each(function() {
+          let ite=$(this).children('td').eq(1);
+          if(cnt==0){
+          ite.css("display", "none")
+          cnt++;
+          }else{
+          if(ite.css("display")== "none")   
+          {
+            ite.css("display","block")
+            ite.css("width","40px")
+          }else {
+            ite.css("display", "none")
+          }
+          }
+        });
+    }
+    /*$(function(){
+      $("#btn").click(function() {
+        $("#test tr td:nth-child(2)").addClass('red');
+      });
+      $("#test tr").click(function() {
+        $(this).children('td').eq(1).addClass('red');
+      });
+    });*/
+  - var tdtitle=[null,null,null,null,null,null,null]
+  table(style=' border: 1px solid black;width:120%;position: relative;top:-10px; left: -10px;')#desc
+    each book, ind in books
+      case ind
+        when 0
+          tr
+            each val, inx in book
+              -tdtitle[inx]=val
+              td() 
+        when 1
+          tr 
+            each val, inx in book
+              -var xid =tdtitle[inx]
+              if xid
+                td= val
+                  a( href=`/internal/workgrid/${xid}` ) +
+              else
+                td
+                  a(onclick="hidshow()")= val
+
+        default
+          if ind==11
+            tr
+              td(colspan=7,align="center") 早  讀  及  中  午  時  段
+          tr
+            each val, inx in book
+              -var xid =tdtitle[inx]
+              if inx<1
+                td= val
+              else if inx<2
+                td(style = "border: 1px solid black; margins:0; padding:0;width:10px")
+                  pre(style='border:0px;margin:0;padding:0;color: #aaa;background-color:#222;')= val
+              else
+                td(id=`${xid}x${ind}`,style = "position: relative;border: 1px solid black; margins:0; padding:0")
+                  textarea.form-control(rows=4,wrap="off", readonly=true, style='overflow-x: hidden; margin:0;padding:0;color: white;background-color:black;')= val
+                  if OriPageToken<0
+                    input(onclick="CFMACT(this);",type="bottun",id="child4",style=" position: absolute;  top: 0px; right: 0px;  height: 30px; width: 35px; " ,value="确認") 
+  span Count Down:                   
+  span#CountDown 300
+  span s
+  div(title="basic info")#BasicInfoBox
+    div#BasicInfoBoxKeyText no.
+    p#BasicInfoBoxText
+
+  div(title="basic info")#EditBox
+    div#EditBoxKeyText no.
+    p#EditBoxText
+    input(type='hidden',enable=false,readonly)#EditBoxOriText
+    label(for="CType") 更新資料 :
+    tabe
+      tr
+        td 
+          input(type="radio", name="CType", id="CType0", value="PL2")
+        td PL2___
+        td          
+          input(type="radio", name="CType", id="CType1", value="OTH",checked)      
+        td 其他___
+        td
+          input(type="text",name="CTypeNote")#CTypeNote
+    
+    
+  div(title="basic info")#ConfirmBox
+    div#ConfirmBoxKeyText no.
+    input(type="checkbox")#ConfirmBoxChb1
+    span#ConfirmBoxText1
+    br
+    input(type="checkbox")#ConfirmBoxChb2
+    span#ConfirmBoxText2
+    br
+    input(type="checkbox")#ConfirmBoxChb3
+    span#ConfirmBoxText3
+    br
+    input(type="checkbox")#ConfirmBoxChb4
+    span#ConfirmBoxText4
+    p#ConfirmBoxText
+
+  if !books.length
+    p No work log found.
+  -var prePageToken = nextPageToken - 10 > 0 ? nextPageToken - 10 : 0
+  if nextPageToken 
+    nav
+      ul.pager
+        if nextPageToken==5
+          li 
+            a(href=`?pageToken=${encodeURIComponent(-14)}`) -14
+          li
+            a(href=`?pageToken=${encodeURIComponent(-7)}`) -7                
+        li &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        li
+          a(href=`?pageToken=${encodeURIComponent(prePageToken)}`) Prev
+        li
+          a(href=`?pageToken=${encodeURIComponent(nextPageToken)}`) Next
+  else 
+    nav
+      ul.pager
+        li
+          a(href=`?pageToken=${encodeURIComponent(prePageToken)}`) Prev
+  if cflag            
+    li
+      a(href="/internal/workgrid/add") Add Rec
+  script.
+    function CFMACT(x){
+      //blank form
+      $('#ConfirmBoxKeyText').text($(x.parentElement).attr('id')); 
+      $('#ConfirmBoxText').html("");
+      for(let i=1;i<5;i++)
+      {
+         $('#ConfirmBoxText'+i).text(""); $('#ConfirmBoxChb'+i).prop("checked",false);
+      }
+      //end blank form
+      let a=$(x.parentElement).text().split('\n');
+      let cnt=0;
+      for(let i=0;i<a.length;i++){
+        if( a[i] && (a[i].indexOf(':OTH:') >0 || a[i].indexOf(':PL2:')>0)){
+          for(let j=0;j<grp_r.length;j++){
+            if(a[i].indexOf("T"+ID2HEX(grp_r[j]))>0 ){
+             cnt++;
+             $('#ConfirmBoxText'+cnt).text(a[i]);
+            }
+          }
+        }
+      }
+      if(cnt>0){ $( "#ConfirmBox" ).dialog("open"); }else{ $( "#ConfirmBox" ).dialog("close");}
+    }  
+    
+    function ID2HEX(x){x=x==0?0:Number(x)-1986000;return Number(x).toString(16);}  
+    function HEX2ID(x){return parseInt(x)+1986000;}  //x="0xfff"
+    var grp_r='!{grp_r}'; grp_r=grp_r.split(',');  //console.log(grp_r); 可确認用戶列表.
+    var stafref=!{profile&&profile.id?profile.id:0}; 
+    var stafid=ID2HEX(stafref);  // 3e98
+    var _OPT =(!{OriPageToken}); // -7 or -14
+    //Timer refresh context
+    var startTime=new Date().getTime();
+    var x=setInterval(function(){
+        var now = new Date().getTime();
+        var distance = (300000 +(startTime-now) )/1000;
+        try{
+          document.getElementById("CountDown").innerHTML = distance ;
+          if (distance < 0) {
+            clearInterval(x); document.getElementById("demo").innerHTML = "EXPIRED";
+          }
+        }catch(excep){}
+    },10000)  
+    //End Timer
+    $( function() {
+      $( "#EditBox" ).dialog({autoOpen: false,buttons: [
+        {
+          text: "Edit",  icon: "ui-icon-closethick", click: function() { 
+            let key=$('#EditBoxKeyText').text().split("x");
+            let oritxt=$('#EditBoxOriText').val();
+            let newtxt="";
+            if($('#CType0').prop("checked")) newtxt=":PL2:";
+            if($('#CType1').prop("checked")) newtxt=":OTH:";
+            newtxt+=$('#CTypeNote').val().replace(/[: ]/g,"");
+            if(oritxt.indexOf(":OTH:")>0) {newtxt=oritxt.replace(":OTH:",newtxt);}
+            if(oritxt.indexOf(":PL2:")>0) {newtxt=oritxt.replace(":PL2:",newtxt);}
+            //console.log(oritxt,newtxt,key);
+            let rooms=["A","B","C","D","E","F","G","H","I","J"];
+            $.post(`/internal/workgrid/${key[0]}/replace_editlesson`, {key:rooms[Number(key[1])-2],oritxt:oritxt,newtxt:newtxt}, function(result){
+              alert(result[rooms[Number(key[1])-2]]);
+              $("#"+$('#EditBoxKeyText').text()).children("textarea").text(result[rooms[Number(key[1])-2]]);
+              //console.log("feedback",$("#"+$('#EditBoxKeyText').text()).text());
+            });
+          }
+        }
+      ]});      
+      $( "#ConfirmBox" ).dialog({autoOpen: false,buttons: [
+        {
+          text: "CONFIRM",  icon: "ui-icon-closethick", click: function() { 
+            let key=$('#ConfirmBoxKeyText').text().split("x");
+            let rooms=["A","B","C","D","E","F","G","H","I","J"];
+           for(let i=1;i<5;i++)
+           {
+              if($('#ConfirmBoxChb'+i).prop("checked")){
+                let txt=$('#ConfirmBoxText'+i).text();
+                txt=txt.replace(":PL2:",":PL2C:");
+                txt=txt.replace(":OTH:",":OTHC:");
+                txt+="C"+stafid;
+                $.post(`/internal/workgrid/${key[0]}/confirm_editlesson`, {key:rooms[Number(key[1])-2],oritxt:$('#ConfirmBoxText'+i).text(),newtxt:txt}, function(result){
+                  alert(result[rooms[Number(key[1])-2]]);
+                  $("#"+$('#ConfirmBoxKeyText').text()).children("textarea").text(result[rooms[Number(key[1])-2]]);
+                  //console.log("feedback",$("#"+$('#ConfirmBoxKeyText').text()).text());
+                });
+              }
+           }
+          }
+        },
+      ]});      
+      $( "#BasicInfoBox" ).dialog({autoOpen: false,buttons: [ { text: "Close",  icon: "ui-icon-closethick", click: function() {  $( this ).dialog( "close" ); }} ]});
+      function TD_CLICK_ACT(x){
+        $(x).text().match(/U[0-9a-f]+/g).forEach(function(stafhex){
+          console.log(stafhex,HEX2ID(stafhex.replace("U","0x")));
+        })
+        if(_OPT<0 && ($(x).html().indexOf(":3")>0||$(x).html().indexOf(":6")>0||$(x).html().indexOf(":9")>0)){  
+            $( "#EditBoxKeyText" ).text($(x.parentElement).attr('id')); 
+             $( "#EditBoxText" ).html("");
+             $( "#EditBoxOriText" ).val("");
+             $('#CType0').prop("checked",false) ;
+             $('#CType1').prop("checked",false) ;
+             $('#CTypeNote').val("");
+            let content=$(x).text().split('\n');
+            let flag=true;
+            for(let i=0;i<content.length;i++)
+            {
+              if(content[i].indexOf(':OTH:')>0||content[i].indexOf(':PL2:')>0)
+              {
+                let _c=content[i].split(':');
+                 console.log("T"+stafid,_c[_c.length-1]);
+                 if(_c[_c.length-1].indexOf("T"+stafid)>=0){
+                 $( "#EditBoxText" ).html(_c.join("<br>"));  
+                 $( "#EditBoxOriText" ).val(content[i]);
+                 $( "#EditBox" ).dialog("open"); 
+                 flag=false;
+                  }
+              }
+            }
+            if(flag) $( "#EditBox" ).dialog("close");  
+        } else {
+          if($(x).html().indexOf(":3")>0||$(x).html().indexOf(":6")>0||$(x).html().indexOf(":9")>0){  
+            $( "#BasicInfoBox" ).dialog("open");  
+            $( "#BasicInfoBoxText" ).html($(x).text().split('\n').join("<br>"));  
+          }
+        }
+      }
+      $('textarea').click(function(){  TD_CLICK_ACT(this);   });
+      $('textarea').dblclick(function(){TD_CLICK_ACT(this);  });
+    } );      

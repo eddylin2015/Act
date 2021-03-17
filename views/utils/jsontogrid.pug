@@ -1,0 +1,161 @@
+extends ../layout
+block content
+  P .
+  P .
+  div#gridtbl
+  form(method="POST")#formid
+    textarea#JSONTEXT(name="JSONTEXT",rows=20,cols=120)
+    br
+    input(type="button",onclick="t2grid();",value="ShowGrid")
+    input(type="button",onclick="t2titlegrid();",value="ShowTitleGrid")
+    input(type="radio",name="fmt",value="plaintxt",checked)
+    span Plain Text
+    input(type="radio",name="fmt",value="xls")
+    span XLS File
+    input(type="radio",name="fmt",value="xlstitle")
+    span XLS Title
+
+    input(type="button",onclick="f();",value="Submit")
+  script.
+    
+    function Text2Arr(JSONTEXT)
+    {
+        try{
+        var jobj=JSON.parse(JSONTEXT);   
+        var aobj=new Array();
+        if(Array.isArray(jobj)){
+            for(let i=0;i<jobj.length;i++){
+               let obj=jobj[i];
+               let ra=new Array();
+               if(Array.isArray(obj)){
+                   for(let j=0;j<obj.length;j++){ ra.push(obj[j]); }
+               }else{
+                   for (var key in obj) {
+                        if (obj.hasOwnProperty(key)) {
+                             ra.push(key);
+                             ra.push(obj[key]);
+                        }
+                    }
+                }
+                aobj.push(ra);
+            }        
+        }else{
+            let ra=new Array();
+            for (var key in jobj) {
+                if (jobj.hasOwnProperty(key)) {
+                    ra.push(key);
+                    ra.push(jobj[key]);
+                }
+            }
+            aobj.push(ra);
+        }
+        return aobj;
+        }catch(e){
+            alert(e);
+        }
+        return null;
+    }
+    function t2grid()
+    {
+        var txt =document.getElementById("JSONTEXT").value;
+        try{
+            var aobj=Text2Arr(txt);
+            if(aobj==null){ return;}
+            var tbl="<table border=1>";
+            for(let i=0;i<aobj.length;i++){
+            tbl+="<tr>";
+            for(let j=0;j<aobj[i].length;j++){
+                if(aobj[i][j]==undefined )  
+                {
+                    tbl+=`<td>null`;
+                }
+                else{
+                    tbl+=`<td>${aobj[i][j]}`
+                }
+            }    
+        }
+        tbl+="</table>"
+            document.getElementById("gridtbl").innerHTML=tbl;
+        }catch(e){
+            alert(e);
+        }
+    }
+  
+    function Text2TitleArr(JSONTEXT)
+    {
+        try{
+        var atitle=new Array();
+        var jobj=JSON.parse(JSONTEXT);   
+        var aobj=new Array();
+        aobj.push(atitle);
+        if(Array.isArray(jobj)){
+            for(let i=0;i<jobj.length;i++){
+               let obj=jobj[i];
+               let ra=new Array();
+               if(Array.isArray(obj)){
+                   for(let j=0;j<obj.length;j++){ ra.push(obj[j]); }
+               }else{
+                   for (var key in obj) {
+                        if (obj.hasOwnProperty(key)) {
+                             if(!atitle.includes(key)){
+                                 atitle.push(key);
+                                 }
+                             ra[atitle.indexOf(key)]=obj[key];
+                        }
+                    }
+                }
+                aobj.push(ra);
+            }        
+        }else{
+            let ra=new Array();
+            for (var key in jobj) {
+                if (jobj.hasOwnProperty(key)) {
+                    ra.push(key);
+                    ra.push(jobj[key]);
+                }
+            }
+            aobj.push(ra);
+        }
+        return aobj;
+        }catch(e){
+            alert(e);
+        }
+        return null;
+    }    
+    function t2titlegrid()
+    {
+        var txt =document.getElementById("JSONTEXT").value;
+        try{
+            var aobj=Text2TitleArr(txt);
+            if(aobj==null){ return;}
+            var tbl="<table border=1>";
+            for(let i=0;i<aobj.length;i++){
+            tbl+="<tr>";
+            for(let j=0;j<aobj[i].length;j++){
+                if(aobj[i][j]==undefined )  
+                {
+                    tbl+=`<td>null`;
+                }
+                else{
+                    tbl+=`<td>${aobj[i][j]}`
+                }
+            }    
+        }
+        tbl+="</table>"
+            document.getElementById("gridtbl").innerHTML=tbl;
+        }catch(e){
+            alert(e);
+        }
+    }    
+    function f()
+    {
+        var txt =document.getElementById("JSONTEXT").value;
+        try{
+            var aobj=Text2Arr(txt);
+            if(aobj==null){ return;}
+            alert(JSON.stringify(aobj));
+            document.getElementById("formid").submit();
+        }catch(e){
+            alert(e);
+        }
+    }

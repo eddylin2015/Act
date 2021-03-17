@@ -1,0 +1,34 @@
+﻿doctype html
+html
+  head
+    title 訪客登記表
+    meta(charset='utf-8')
+    meta(name="viewport", content="width=device-width, initial-scale=1")
+    link(rel='stylesheet', href='/stylesheets/bootstrap.min.css')
+  body
+    .navbar.navbar-default
+      .container
+        .navbar-header
+          .navbar-brand 
+          a.navbar-brand  訪客登記
+        ul.nav.navbar-nav
+          li
+            a(href="/internal/") 
+              span(class="glyphicon") &#xe021
+          li
+            a(href="/internal/attend") 訪客列表
+          li
+            a(href="/internal/attend/mine") 我的記錄
+          li
+            a(href='/internal/attend/searchform')
+              span(class="glyphicon glyphicon-search")
+        p.navbar-text.navbar-right
+          if profile
+            if profile.image
+              img.img-circle(src=profile.image, width=24)
+            span #{profile.displayName} &nbsp;
+              a(href='/logout') (logout)
+          else
+            a(href='/login') Login
+    .container
+      block content
