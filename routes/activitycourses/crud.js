@@ -13,8 +13,6 @@ function getModel() {
 function authRequired(req, res, next) {
     let act_c_id = req.params.book;
     let fn = req.query.fn? req.query.fn:"";
-    console.log(act_c_id,fn)
-    console.log(req.session.al_pass)
     if (req.user) {
         req.session.al_pass=act_c_id
     }
@@ -55,6 +53,7 @@ router.get('/', (req, res, next) => {
         });
     });
 });  
+//for autor
 router.get('/al_list/:book',authRequired,  (req, res, next) => {
     let act_c_id = req.params.book;
     let fn = req.query.fn? req.query.fn:"";
@@ -68,15 +67,50 @@ router.get('/al_list/:book',authRequired,  (req, res, next) => {
         });
     });
 });  
-router.get('/al_list/:book/add',authRequired,  (req, res, next) => {
-});  
-router.post('/al_list/:book/add',authRequired,  (req, res, next) => {
-});  
-router.get('/al_list/:book/form/:alid',authRequired,  (req, res, next) => {
-});  
-router.post('/al_list/:book/form/:alid',authRequired,  (req, res, next) => {
-});  
+function fmt_time() {
+    let d = new Date(),Y=d.getFullYear(),M=d.getMonth()+1,D=d.getDate();
+    let HH=d.getHours(),MM=d.getMinutes(),SS=d.getSeconds(),MS=d.getMilliseconds();
+    return Y+''+ (M<10? "0"+M : M)+''+(D<10? "0"+D : D)+""+(HH<10?'0'+HH:HH) + "" +(MM<10?"0"+MM:MM) //+ ":" + SS +":" + MS;
+}
 
+router.get('/al_list/:book/add',authRequired,  (req, res, next) => {
+    let act_c_id = req.params.book;
+    let fn = req.query.fn? req.query.fn:"";
+    let al_datetime=fmt_time()
+    res.render('activitycourses/al_form.pug', {
+        profile: req.user,
+        book: {
+            al_id:0,
+            act_c_id:act_c_id,
+            fn:fn,
+            al_datetime:al_datetime
+        },
+        action: 'Add'
+    });    
+});  
+router.post('/al_list/:book/add',authRequired, images.multer.single('image'), (req, res, next) => {
+    let act_c_id = req.params.book;
+    let fn = req.query.fn? req.query.fn:"";
+    const data = req.body;
+    getModel().CreateActLesson( data, (err, al_id) => {
+            if (err) {
+                next(err);
+                return;
+            }          
+            res.redirect(`${req.baseUrl}/al_list/${act_c_id}?fn=${fn}`);
+            //res.redirect(`${req.baseUrl}/al_list/${act_c_id}?/view/${al_id}`);
+        });
+    }
+);
+router.get('/al_list/:book/view/:alid',authRequired,  (req, res, next) => {
+    res.end("aaaa")
+});  
+router.get('/al_list/:book/edit/:alid',authRequired,  (req, res, next) => {
+    res.end("aaaa")
+});  
+router.post('/al_list/:book/edit/:alid',authRequired,  (req, res, next) => {
+    res.end("aaaa")
+});  
 
 router.get('/al_login/:book',  (req, res, next) => {
     let act_c_id = req.params.book;
@@ -90,13 +124,20 @@ router.get('/al_login/:book',  (req, res, next) => {
 router.post('/al_login/:book',  images.multer.single('image'),  (req, res, next) => {
     let act_c_id = req.body.ActID;
     let fn = req.body.Act;
+    if(req.body.password==act_c_id)
+    {
     req.session.al_pass=act_c_id
-    console.log("####")
-    console.log(req.session.al_pass)
-    console.log("####")
     return res.redirect(`/internal/activitycourses/al_list/${act_c_id}?fn=${encodeURI(fn)}`);
+    }
+    return res.redirect(`/internal/activitycourses/al_login/${act_c_id}?fn=${encodeURI(fn)}`);
+});  
+router.get('/al_logout',  (req, res, next) => {
+    req.session.al_pass=null;
+    return res.redirect(`/internal/activitycourses`);
 });  
 
+
+//for act mng
 router.get('/cnolist', authRequired, (req, res, next) => {
     res.render('markup/actmng/cnolist.pug', {
         profile: req.user,
@@ -105,6 +146,7 @@ router.get('/cnolist', authRequired, (req, res, next) => {
         sect:req.query.cno,
     });
 });  
+
 
 router.get('/actlist',authRequired, (req, Response, next) => {
     let aot = GetAOT(req);

@@ -2,7 +2,6 @@
 var profileUserNameId
 var exports_m0 = [
     //{ n: 'Library gov mo', lnk: 'https://www.library.gov.mo/zh-hant/library-collections/e-resources' },
-    { n: 'IE問卷調查', lnk: '/IE問卷調查.html' },
     { n: 'eClass 內聯平台', lnk: 'https://eclass.macaubaptist.edu.mo/templates/' },
     { n: '校內直播平台', lnk: 'http://tv.mbc.edu.mo' },
     { n: '職業興趣問卷', lnk:'http://info.mbc.edu.mo:8080/jobcareer/index.html'},    
@@ -67,7 +66,7 @@ $(document).ready(function () {
         $("#marksys_mnu").append("<li><a href='/internal/leaveapplication'>學部-請假記錄</a></li>");
         $("#excu_sys_mnu").append("<li><a href='/internal/bookingplayground'>支援-預訂場地</a></li>"); 
         if (profileUserName.indexOf('hoipouwan') >= 0 || profileUserName.indexOf('lammou') >= 0) {
-           $("#excu_sys_mnu").append("<li><a href='/internal/execudept/'>行政-職員相片</a></li>"); 
+           $("#excu_sys_mnu").append("<li><a href='/internal/execudept/familySchComm'>行政-家校通訊</a></li>"); 
            $("#excu_sys_mnu").append("<li><a href='/internal/execudept/mngstudphoto'>行政-學生證照片</a></li>");          
            $("#excu_sys_mnu").append("<li><a href='/internal/markup/mark_report_mrs_course_list'>學部-課程列表</a></li>");
         }

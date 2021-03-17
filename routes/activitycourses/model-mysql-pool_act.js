@@ -103,6 +103,46 @@ async function UpdateActDef(aObj, cb) {
         connection.release();
     });
 }
+
+function CreateActLesson(data, cb) {
+    //console.log(data);
+    mysqlcfg.esdbPool.getConnection(function (err, conn) {
+        if (err) { cb(err); return; }
+        conn.query('INSERT INTO `active_lesson` SET ? ', [data], (err, res) => {
+            if (err) {
+                cb(err);
+                return;
+            }
+            //read(res.insertId, cb);
+            CloneActLessonStudList(data.act_c_id,res.insertId,(err, inc_cnt) => {
+
+                cb(null,res.insertId,inc_cnt);    
+                conn.release();
+            });
+        });
+    });
+}
+async function CloneActLessonStudList(act_c_id,al_id, cb) {
+    pool.getConnection(async function (err, connection) {
+        let cnt=0
+        connection.query(
+            'SELECT * FROM `active_stud` where act_c_id=? ', [act_c_id],async function (err, results) {
+                if (err) { cb(err); return; }
+                for(let i=0;i<results.length;i++){
+                    let r=results[i];
+                    let data={aa_id:0,al_id:al_id,act_c_id:act_c_id,stud_ref:r.stud_ref,classno:r.classno,seat:r.seat,c_name:r.c_name}
+                cnt += await new Promise((resolve, reject) => {
+                    connection.query('INSERT INTO `active_attend` SET ?', data, (err, res) => {
+                        if (err) { console.log(err); reject(err); }
+                        resolve(100);
+                    });
+                });
+                }
+            });
+        cb(null, Math.floor(cnt / 100));
+        connection.release();
+    });
+}
 function ReadActLessons(act_c_id,cb){
     pool.getConnection(function (err, connection) {
         if (err) {
@@ -271,7 +311,9 @@ module.exports = {
     read: read,
     readclassnostud: readclassnostud,
     ReadActivebyACTCID:ReadActivebyACTCID,
-    ReadActLessons:ReadActLessons
+    ReadActLessons:ReadActLessons,
+    CreateActLesson:CreateActLesson,
+    CloneActLessonStudList:CloneActLessonStudList
 };
 
 if (module === require.main) {

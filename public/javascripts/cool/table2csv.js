@@ -1,26 +1,3 @@
-/********************************************************************************
- *  Table 匯出 CSV
- * 
- * script(src="/javascripts/cool/table2csv.js")
- * 
- * <script src="/javascripts/jquery.min.js"></script>
- * <script src="/javascripts/cool/table2csv.js"></script>
- * a(href=#)#exportbtn2 Export2CSV
- * div#tableContent
- *  table#EDUTBL
- *    tr
- *      td a
- *      td b
- *    tr
- *      td a
- *      td b
-   script.
-     $(document).ready(function(){
-       $("#exportbtn2").on('click', function(event) {
-         exportTableToCSV.apply(this, [$('#tableContent>table'), 'export0.csv']);
-       });
-     });
-********************************************************************************/
 function exportTableToCSV($table, filename) {
     var $rows = $table.find('tr:has(td)'),
     // Temporary delimiter characters unlikely to be typed by keyboard

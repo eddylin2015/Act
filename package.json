@@ -1,5 +1,5 @@
 {
-  "name": "web",
+  "name": "attendance",
   "version": "0.0.0",
   "private": true,
   "scripts": {
@@ -18,7 +18,7 @@
     "package.json": "^2.0.1",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
-    "pug": "^2.0.3",
+    "pug": "^3.0.2",
     "redis": "^2.8.0"
   },
   "main": "app.js",
@@ -26,5 +26,20 @@
     "lib": "lib"
   },
   "devDependencies": {},
-  "license": "ISC"
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/eddylin2015/attendance.git"
+  },
+  "keywords": [
+    "activity",
+    "course",
+    "attendance",
+    "reg",
+    "records"
+  ],
+  "bugs": {
+    "url": "https://github.com/eddylin2015/attendance/issues"
+  },
+  "homepage": "https://github.com/eddylin2015/attendance#readme"
 }

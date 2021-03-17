@@ -5,29 +5,29 @@ var CSVFrm = null;
 var OriginalData = null;
 var PostUrl = null;
 var _Field_Defs = null;
-
 ////////Program Start
 function BindingZeroClipboard(id, tablename) { }
 function bind_txtinput_paste($txtinput, cell) {
 	$txtinput.bind('paste', function (e) {
 		var txt = e.originalEvent.clipboardData.getData('Text');
+		console.log(txt)
 		var data_arr =txt.split('\n');
 		var rowcnt = data_arr.length; let linefeed=false;
-
 		/*
 		var data_arr = new Array();
 		var rowcnt = 0; let linefeed=false;
 		for (i = 0; i < txt.length; i++) {
 			if (txt.charCodeAt(i)==10 ||txt.charCodeAt(i)==13 || txt[i] == '\n' || txt[i] == '\r') {
-				if(!linefeed){ rowcnt++;	linefeed=true;}
+				if(!linefeed){
+					rowcnt++;
+					linefeed=true;
+				}
 			} else {
 				linefeed=false;
 				if (data_arr[rowcnt] == null) data_arr[rowcnt] = "";
 				data_arr[rowcnt] += txt[i];
 			}
-		}
-		*/
-
+		}*/
 		var colcnt = data_arr[0].split('\t').length;
 		var f_data_arr = new Array();
 		for (i = 0; i < rowcnt; i++) {
@@ -40,7 +40,7 @@ function bind_txtinput_paste($txtinput, cell) {
 					f_data_arr[j][k] = temp_ar[k];
 			}
 		}
-
+		//return f_data_arr;
 		if (rowcnt > 1 || colcnt > 1) {
 			if (confirm("DataGrid " + rowcnt + "x" + colcnt + " Paste " + rowcnt + "x" + colcnt + "?")) {
 				var c_cell = cell;
@@ -75,7 +75,6 @@ function bind_txtinput_paste($txtinput, cell) {
 		}
 	});
 }
-
 function editCell(cell) {
 	//$txt=$('<input type=text>');
 	//$txt.width(cell.width()-3);
@@ -90,8 +89,8 @@ function editCell(cell) {
 		cell.append($txt);
 		return $txt;
 	}
-}
 
+}
 function closeedit() {
 	$('.M').each(function (i) {
 		if ($(this).has(":input").length == 0) {
@@ -104,7 +103,9 @@ function closeedit() {
 	});
 }
 
-function BindingFieldDefsIntegerFields(fielddef_obj) { 	_Field_Defs = fielddef_obj; }
+function BindingFieldDefsIntegerFields(fielddef_obj) {
+	_Field_Defs = fielddef_obj;
+}
 
 function GenOriginalData() {
 	if (OriginalData == null) {
@@ -114,10 +115,13 @@ function GenOriginalData() {
 			OriginalData[$(this).attr('id')] = $(this).text();
 		});
 	}
-}
+	// alert(JSON.stringify(OriginalData));
 
+}
 function SplitPastFrmText(txt) {
+
 	var data_arr = new Array();
+	var fieldtxt = "";
 	var rowcnt = 0;
 	for (i = 0; i < txt.length; i++) {
 		if (txt[i] == '\n') {
@@ -128,6 +132,7 @@ function SplitPastFrmText(txt) {
 			data_arr[rowcnt] += txt[i];
 		}
 	}
+
 	var colcnt = data_arr[0].split('\t').length;
 	var f_data_arr = new Array();
 	for (i = 0; i < colcnt; i++) {
@@ -141,8 +146,8 @@ function SplitPastFrmText(txt) {
 		}
 	}
 	return f_data_arr;
-}
 
+}
 function ArrayPast2Table(tablename, fieldname, fill_data) {
 	var table = document.getElementById(tablename);
 	var rowLength = table.rows.length;
@@ -188,6 +193,7 @@ function BindingPastFrm(frm, txt, table) {
 			buttons: {
 				"past": function () {
 					closeedit();
+					//alert($("#"+txt).val());
 					var fill_data = SplitPastFrmText($("#" + txt).val());
 					for (i = 0; i < fill_data.length; i++) {
 						var fieldname = "";
@@ -207,7 +213,6 @@ function BindingPastFrm(frm, txt, table) {
 			}
 		});
 }
-
 function BindingCSVFrm(frm, linkid, tabletxt, filename) {
 	CSVFrm = frm;
 	$('#' + frm).dialog(
@@ -221,7 +226,6 @@ function BindingCSVFrm(frm, linkid, tabletxt, filename) {
 			}
 		});
 }
-
 function BindingFunctions(editbtn, savebtn, pastbtn, exportbtn, readmodbtn) {
 	$('#' + editbtn).click(function (event) {
 		var input_first = null;
@@ -252,6 +256,7 @@ function BindingFunctions(editbtn, savebtn, pastbtn, exportbtn, readmodbtn) {
 				}
 			}
 		});
+
 		if (PostUrl != null) {
 			$.post(PostUrl, { datajson: JSON.stringify(json), keycode: '125678985432' })
 				.done(function (data) {
@@ -268,8 +273,8 @@ function BindingFunctions(editbtn, savebtn, pastbtn, exportbtn, readmodbtn) {
 	$('#' + pastbtn).click(function () { $('#' + PastFrm).dialog('open'); });
 	$('#' + exportbtn).click(function () { $('#' + CSVFrm).dialog('open'); });
 	$('#' + readmodbtn).click(function () { closeedit(); });
-}
 
+}
 var head_editMod_status = new Object();
 function BindingHead_EditMode(head_arr) {
 	for (i = 0; i < head_arr.length; i++) {
@@ -300,8 +305,8 @@ function BindingHead_EditMode(head_arr) {
 		});
 	}
 }
-
 $(document).ready(function () {
+
 	$('td.M').click(function (event) {
 		var edit_cell=editCell($(this));
 		if(edit_cell) edit_cell.focus();
@@ -319,6 +324,7 @@ $(document).ready(function () {
 	}
 
 	$("td.M").keydown(function (e) {
+
 		var cell_id = $(this).attr('id');
 		var rowid = 0;
 		var count = 0;
@@ -330,6 +336,7 @@ $(document).ready(function () {
 				count++;
 			}
 		});
+
 		switch (e.keyCode) {
 			case 38: //this is up!
 				rowid--;

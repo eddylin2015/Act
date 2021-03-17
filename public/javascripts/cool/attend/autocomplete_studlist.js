@@ -2,10 +2,10 @@
 
   
     var Stud0;
-    $.get("/internal/attend/tags_stud_list_data.json", function (data) {
+    $.get("tags_stud_list_data.json", function (data) {
         $("#A").autocomplete({ source: data });
     }, "json");
-    $.get("/internal/attend/tags_staf_list_data.json", function (data) {       
+    $.get("tags_staf_list_data.json", function (data) {       
         $("#H").autocomplete({ source: data });
         /*var tags = data;
         $("#H").autocomplete({
