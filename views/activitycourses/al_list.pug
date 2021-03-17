@@ -1,14 +1,13 @@
 extends ./base.pug
 block content 
   h3= fn
-
-  a(href=`/internal/activitycourses/al_list/${book.al_id}/add`, class='btn btn-success btn-sm')
+  a(href=`/internal/activitycourses/al_list/${act_c_id}/add`, class='btn btn-success btn-sm')
     i.glyphicon.glyphicon-plus
     span  Add lesson
 
   for book in books
     .media
-      a(href=`/internal/activitycourses/al_list/${book.al_id}?fn=${book.lesson}`)
+      a(href=`/internal/activitycourses/al_list/${act_c_id}/${book.al_id}?fn=${book.lesson}`)
         .media-left
             //img(src=book.imageUrl || "http://placekitten.com/g/128/192")
         .media-body

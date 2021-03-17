@@ -51,6 +51,7 @@ router.get('/', (req, res, next) => {
         res.render('activitycourses/index.pug', {
             profile: req.user,
             books: entity,
+            al_pass:req.session.al_pass
         });
     });
 });  
@@ -60,6 +61,7 @@ router.get('/al_list/:book',authRequired,  (req, res, next) => {
     getModel().ReadActLessons(act_c_id, (err, entity) => {
         if (err) { next(err); return; }
         res.render('activitycourses/al_list.pug', {
+            act_c_id:act_c_id,
             profile: req.user,
             books: entity,
             fn:fn,

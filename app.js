@@ -81,7 +81,7 @@ app.use(function (err, req, res, next) {
     error: err
   });
 });
-app.set('port', config.get("PORT");
+app.set('port', config.get("PORT"));
 const cluster = require('cluster');
 const numCPUs = require('os').cpus().length>6?2:require('os').cpus().length;
 
