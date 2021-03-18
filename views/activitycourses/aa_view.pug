@@ -4,7 +4,7 @@ block content
   h3= `${al_id} ${fn}`
   a(href=`/internal/activitycourses/al_list/${act_c_id}/edit/${al_id}?fn=${fn}`, class='btn btn-success btn-sm')
     i.glyphicon.glyphicon-plus
-    span edit
+    span 登記出席
   style.  
     td{padding: 2px 5px 5px 5px;}
   table
@@ -32,6 +32,8 @@ block content
           - in_type_list=["","出席","遲到","缺席"]
           each val in [1,2,3]
             if book.in_type == val 
+              if book.in_type == 1
+                span(class="glyphicon glyphicon-ok")            
               label(class="radio-inline")= in_type_list[val] +"" 
           span &nbsp;
           span &nbsp;
@@ -43,6 +45,8 @@ block content
           span= book.out_type
           each val in [1,2,3]
             if  book.out_type == val 
+              if book.out_type == 1
+                span(class="glyphicon glyphicon-ok")
               label(class="radio-inline")= out_type_list[val] +""
           span &nbsp;
           span &nbsp;

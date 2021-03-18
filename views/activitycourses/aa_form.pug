@@ -1,7 +1,10 @@
 extends ./base.pug
 block content 
+  
   link(rel='stylesheet', href='/stylesheets/cool/kidevalform.css')
   h3= `${al_id} ${fn}`
+  style.
+    input{color:black}
   script.
     function fmt_time() {
        let d = new Date(), Y = d.getFullYear(), M = d.getMonth() + 1, D = d.getDate();
