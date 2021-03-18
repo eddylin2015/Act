@@ -2,7 +2,23 @@ extends ./base.pug
 block content 
   link(rel='stylesheet', href='/stylesheets/cool/kidevalform.css')
   h3= `${al_id} ${fn}`
- 
+  script.
+    function fmt_time() {
+       let d = new Date(), Y = d.getFullYear(), M = d.getMonth() + 1, D = d.getDate();
+       let HH = d.getHours(), MM = d.getMinutes(), SS = d.getSeconds(), MS = d.getMilliseconds();
+       //return Y + '' + (M < 10 ? "0" + M : M) + '' + (D < 10 ? "0" + D : D) + "" + (HH < 10 ? '0' + HH : HH) + "" + (MM < 10 ? "0" + MM : MM) //+ ":" + SS +":" + MS;
+       return  (HH < 10 ? '0' + HH : HH) + "：" + (MM < 10 ? "0" + MM : MM) 
+    }
+    function intime(x,a){
+      var x = document.getElementById("in_time_"+x);
+      x.value=fmt_time()
+      if(a.value==3) x.value=""
+      
+    }
+    function outtime(x,a){
+      var x = document.getElementById("out_time_"+x);
+      x.value=fmt_time()
+    }
   form(method="POST", enctype="multipart/form-data")
     table.table 
       tr 
@@ -21,27 +37,27 @@ block content
             span 	&nbsp;
             span= book.seat 
           td
-            span= book.in_type
+            //span= book.in_type
             .form-group
               //label(for="title",style="width:80px") 
               - in_type_list=["","出席","遲到","缺席"]
               each val in [1,2,3]
                 label(class="radio-inline")= in_type_list[val] +" __"
-                  input(type="radio", name="in_type",id= ("in_type"+val), value= (val),checked= ( book.in_type == val ? true : false ) )
+                  input(type="radio", name=`in_type_${book.aa_id}`,id= (`in_type_${book.aa_id}_`+val), value= (val),checked= ( book.in_type == val ? true : false ),onclick=`intime(${book.aa_id},this)` )
               label 時間:
-                input(value=book.in_time,size=3)
+                input(id=`in_time_${book.aa_id}`,name=`in_time_${book.aa_id}`,value=book.in_time,size=3)
           td  
-            span= book.out_type
+            //span= book.out_type
             .form-group
               //label(for="title",style="width:80px") 
               - out_type_list=["","下課","早退","加時"]
               each val in [1,2,3]
                 label(class="radio-inline")= out_type_list[val] +" __"
-                  input(type="radio", name="out_type",id= ("out_type"+val), value= (val),checked= ( book.out_type == val ? true : false ) )
+                  input(type="radio", name=`out_type_${book.aa_id}`,id= (`out_type_${book.aa_id}_`+val), value= (val),checked= ( book.out_type == val ? true : false ),onclick=`outtime(${book.aa_id},this)` )
               label 時間:    
-                input(value=book.out_time,size=3)
+                input(id=`out_time_${book.aa_id}`,name=`out_time_${book.aa_id}`,value=book.out_time,size=3)
           td  
-            input(value=book.hours,size=1)
+            input(name=`hours_${book.aa_id}`,value=book.hours,size=1,type="number",step=".1",)
     button.btn.btn-success(type="submit") Save
     if !books.length
       p No activity course found.

@@ -171,6 +171,30 @@ function ReadActLessonStud(al_id,cb){
             });
     });
 }
+async function UpdateActLessonStud(data,al_id,cb){
+    pool.getConnection(async function (err, connection) {
+        if (err) { cb(err); return; }
+        let cnt = 0;
+        let alist = Object.keys(data);
+        for (let i = 0; i < alist.length; i++) {
+            let key = alist[i];
+            let val= data[key]
+            let li = key.split('_');               
+            let aa_id=li[li.length-1]
+            let fieldname=li[0]
+            for(let i=1;i<li.length-1;i++) fieldname+="_"+li[i]
+            cnt += await new Promise((resolve, reject) => {
+                connection.query(`update active_attend set ${fieldname}=? where aa_id = ?`,[val,aa_id] , (err, res) => {
+                    if (err) { console.log(err); reject(err); }
+                    resolve(100);
+                });
+            });
+        }
+        //cb(null, Math.floor(cnt / 100));
+        ReadActLessonStud(al_id,cb)
+        connection.release();
+    });
+}
 function ReadClassStudAct(cno, cb) {
     pool.getConnection(function (err, connection) {
         if (err) {
@@ -328,7 +352,8 @@ module.exports = {
     ReadActLessons:ReadActLessons,
     CreateActLesson:CreateActLesson,
     CloneActLessonStudList:CloneActLessonStudList,
-    ReadActLessonStud:ReadActLessonStud
+    ReadActLessonStud:ReadActLessonStud,
+    UpdateActLessonStud:UpdateActLessonStud
 };
 
 if (module === require.main) {
