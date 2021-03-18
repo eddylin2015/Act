@@ -119,10 +119,35 @@ router.get('/al_list/:book/view/:alid',authRequired,  (req, res, next) => {
     });
 });  
 router.get('/al_list/:book/edit/:alid',authRequired,  (req, res, next) => {
-    res.end("aaaa")
+    let act_c_id = req.params.book;
+    let alid = req.params.alid;
+    let fn = req.query.fn? req.query.fn:"";
+    getModel().ReadActLessonStud(alid, (err, entity) => {
+        if (err) { next(err); return; }
+        res.render('activitycourses/aa_form.pug', {
+            act_c_id:act_c_id,
+            al_id:alid,
+            profile: req.user,
+            books: entity,
+            fn:fn,
+        });
+    });
+
 });  
 router.post('/al_list/:book/edit/:alid',authRequired,  (req, res, next) => {
-    res.end("aaaa")
+    let act_c_id = req.params.book;
+    let alid = req.params.alid;
+    let fn = req.query.fn? req.query.fn:"";
+    getModel().ReadActLessonStud(alid, (err, entity) => {
+        if (err) { next(err); return; }
+        res.render('activitycourses/aa_view.pug', {
+            act_c_id:act_c_id,
+            al_id:alid,
+            profile: req.user,
+            books: entity,
+            fn:fn,
+        });
+    });    
 });  
 
 router.get('/al_login/:book',  (req, res, next) => {

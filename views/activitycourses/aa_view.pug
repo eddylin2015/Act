@@ -4,21 +4,41 @@ block content
   a(href=`/internal/activitycourses/al_list/${act_c_id}/edit/${al_id}?fn=${fn}`, class='btn btn-success btn-sm')
     i.glyphicon.glyphicon-plus
     span edit
-
-  for book in books
-    .media
-      a(href=`/internal/activitycourses/al_list/${act_c_id}/view/${book.al_id}?fn=${book.lesson}`)
-        .media-left
-            //img(src=book.imageUrl || "http://placekitten.com/g/128/192")
-        .media-body
-          h4
-            span= book.al_id
-            span 	&nbsp;	&nbsp;
-            span= book.al_datetime
-            span 	&nbsp;	&nbsp;
-            span= book.lesson
-  if !books.length
-    p No activity course found.
+  table
+    for book in books
+      tr
+        td
+          span= book.al_id
+        td  
+          span= book.stud_ref
+        td  
+          span= book.c_name
+        td  
+          span= book.classno
+        td  
+          span &nbsp;
+          span= book.seat 
+        td  
+          span &nbsp;&nbsp;IN:
+          span= book.in_type
+            - in_type_list=["","出席","遲到","缺席"]
+            each val in [1,2,3]
+              label(class="radio-inline")= in_type_list[val] +""
+              input(type="radio", name="in_type",id= ("in_type"+val), value= (val),checked= ( book.in_type == val ? true : false ) ,disabled=true)
+            span 時間:
+            span= book.in_time
+            span &nbsp;&nbsp;OUT:
+            - out_type_list=["","下課","早退","加時"]
+            span= book.out_type
+            each val in [1,2,3]
+              label(class="radio-inline")= out_type_list[val] +""
+              input(type="radio", name="out_type",id= ("out_type"+val), value= (val),checked= ( book.out_type == val ? true : false ),disabled=true )
+            span 時間:
+            span= book.out_time
+            span 加時:
+            span= book.hours
+    if !books.length
+      p No activity course found.
 
   
 

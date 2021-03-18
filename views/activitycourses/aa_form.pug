@@ -1,0 +1,50 @@
+extends ./base.pug
+block content 
+  link(rel='stylesheet', href='/stylesheets/cool/kidevalform.css')
+  h3= `${al_id} ${fn}`
+ 
+  form(method="POST", enctype="multipart/form-data")
+    table.table 
+      tr 
+        td &nbsp;Name
+        td &nbsp;IN
+        td &nbsp;OUT
+        td &nbsp;OT Hours 
+      for book in books
+        tr
+          //span= book.al_id
+          //span 	&nbsp;	&nbsp;
+          //span= book.stud_ref
+          td
+            span= book.c_name
+            span= book.classno
+            span 	&nbsp;
+            span= book.seat 
+          td
+            span= book.in_type
+            .form-group
+              //label(for="title",style="width:80px") 
+              - in_type_list=["","出席","遲到","缺席"]
+              each val in [1,2,3]
+                label(class="radio-inline")= in_type_list[val] +" __"
+                  input(type="radio", name="in_type",id= ("in_type"+val), value= (val),checked= ( book.in_type == val ? true : false ) )
+              label 時間:
+                input(value=book.in_time,size=3)
+          td  
+            span= book.out_type
+            .form-group
+              //label(for="title",style="width:80px") 
+              - out_type_list=["","下課","早退","加時"]
+              each val in [1,2,3]
+                label(class="radio-inline")= out_type_list[val] +" __"
+                  input(type="radio", name="out_type",id= ("out_type"+val), value= (val),checked= ( book.out_type == val ? true : false ) )
+              label 時間:    
+                input(value=book.out_time,size=3)
+          td  
+            input(value=book.hours,size=1)
+    button.btn.btn-success(type="submit") Save
+    if !books.length
+      p No activity course found.
+
+  
+

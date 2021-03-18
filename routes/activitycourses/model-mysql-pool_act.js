@@ -164,7 +164,7 @@ function ReadActLessonStud(al_id,cb){
             return;
         }
         connection.query(
-            'SELECT * FROM `active_attend` where al_id=? ', [al_id], (err, results) => {
+            'SELECT * FROM `active_attend` where al_id=? order by classno,seat', [al_id], (err, results) => {
                 if (err) { cb(err); return; }
                 cb(null, results);
                 connection.release();
