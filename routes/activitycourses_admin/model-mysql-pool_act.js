@@ -183,7 +183,6 @@ async function UpdateActLessonStud(data,al_id,cb){
             let aa_id=li[li.length-1]
             let fieldname=li[0]
             for(let i=1;i<li.length-1;i++) fieldname+="_"+li[i]
-            if(fieldname=="hours" && val=="") val="0"
             cnt += await new Promise((resolve, reject) => {
                 connection.query(`update active_attend set ${fieldname}=? where aa_id = ?`,[val,aa_id] , (err, res) => {
                     if (err) { console.log(err); reject(err); }

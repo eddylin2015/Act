@@ -166,9 +166,8 @@ router.post('/al_login/:book', images.multer.single('image'), (req, res, next) =
     if (req.body.password == act_c_id+"2718") {
         req.session.al_pass = act_c_id
         return res.redirect(`/internal/activitycourses/al_list/${act_c_id}?fn=${encodeURI(fn)}`);
-    }else{
-        return res.redirect(`/internal/activitycourses/al_login/${act_c_id}?fn=${encodeURI(fn)}`);
     }
+    return res.redirect(`/internal/activitycourses/al_login/${act_c_id}?fn=${encodeURI(fn)}`);
 });
 
 router.get('/al_logout', (req, res, next) => {
