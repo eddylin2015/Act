@@ -77,7 +77,22 @@ function ReadActDef(cb) {
             });
     });
 }
-
+function ReadActDefbyId(act_c_id,cb) {
+    //ALTER TABLE `eschool`.`active_course_def` 
+    //ADD COLUMN `pwd_adm` VARCHAR(45) NULL AFTER `pwd`;
+    pool.getConnection(function (err, connection) {
+        if (err) {
+            cb(err);
+            return;
+        }
+        connection.query(
+            'SELECT * FROM `active_course_def` WHERE act_c_id=?;', [act_c_id], (err, results) => {
+                if (err) { cb(err); return; }
+                cb(null, results);
+                connection.release();
+            });
+    });
+}
 async function UpdateActDef(aObj, cb) {
     pool.getConnection(async function (err, connection) {
         if (err) { cb(err); return; }
@@ -345,6 +360,7 @@ module.exports = {
     UpdateMarkArr: UpdateMarkArr,
     UpdateAct: UpdateAct,
     ReadActDef:ReadActDef,
+    ReadActDefbyId:ReadActDefbyId,
     UpdateActDef:UpdateActDef,
     ReadMarksysAuth: ReadMarksysAuth,
     read: read,

@@ -119,6 +119,7 @@ router.get('/al_list/:book/view/:alid', authRequired, (req, res, next) => {
         });
     });
 });
+
 router.get('/al_list/:book/edit/:alid', authRequired, (req, res, next) => {
     let act_c_id = req.params.book;
     let alid = req.params.alid;
@@ -160,15 +161,22 @@ router.get('/al_login/:book', (req, res, next) => {
         act: act
     });
 });
+
 router.post('/al_login/:book', images.multer.single('image'), (req, res, next) => {
     let act_c_id = req.body.ActID;
     let fn = req.body.Act;
-    if (req.body.password == act_c_id+"2718") {
-        req.session.al_pass = act_c_id
-        return res.redirect(`/internal/activitycourses/al_list/${act_c_id}?fn=${encodeURI(fn)}`);
-    }else{
-        return res.redirect(`/internal/activitycourses/al_login/${act_c_id}?fn=${encodeURI(fn)}`);
-    }
+    
+    getModel().ReadActDefbyId(act_c_id, (err, entity) => {
+        if (err) { next(err); return; }
+        if (req.body.password == entity.pwd) {
+            req.session.al_pass = act_c_id
+            return res.redirect(`/internal/activitycourses/al_list/${act_c_id}?fn=${encodeURI(fn)}`);
+        }else{
+            return res.redirect(`/internal/activitycourses/al_login/${act_c_id}?fn=${encodeURI(fn)}`);
+        }
+    });
+
+
 });
 
 router.get('/al_logout', (req, res, next) => {
