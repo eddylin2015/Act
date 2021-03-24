@@ -170,7 +170,6 @@ router.post('/as_list/:book/edit', images.multer.single('image'), admin_authRequ
     let act_c_id = req.params.book;
     let fn = req.query.fn ? req.query.fn : "";
     let data=JSON.parse(req.body.STUDLIST)
-    console.log(data)
     let cond1=[]
     for(let temp_ of data)
     {

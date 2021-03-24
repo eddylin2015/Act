@@ -6,8 +6,7 @@ const pool = mysqlcfg.esdbPool;
 
 
 function ReadActDefbyId(act_c_id,cb) {
-    //ALTER TABLE `eschool`.`active_course_def` 
-    //ADD COLUMN `pwd_adm` VARCHAR(45) NULL AFTER `pwd`;
+    //ALTER TABLE `eschool`.`active_course_def` ADD COLUMN `pwd_adm` VARCHAR(45) NULL AFTER `pwd`;
     pool.getConnection(function (err, connection) {
         if (err) {
             cb(err);
