@@ -5,6 +5,8 @@ const http = require('http');
 const redis = require("redis");
 const client = redis.createClient();
 const netutils = require('../../lib/net_utils');
+const { json } = require('body-parser');
+const { compileClientWithDependenciesTracked } = require('pug');
 
 function getModel() {
     return require(`./model-mysql-pool_act`);
@@ -28,13 +30,13 @@ function admin_authRequired(req, res, next) {
     let act_c_id = req.params.book;
     let fn = req.query.fn ? req.query.fn : "";
     if (req.user) {
-        req.session.al_pass = act_c_id
+        req.session.al_adm_pass = act_c_id
     }
-    if (!req.session.al_pass) {
-        return res.redirect(`/internal/activitycourses/al_login/${act_c_id}?fn=${encodeURI(fn)}`);
+    if (!req.session.al_adm_pass) {
+        return res.redirect(`/internal/activitycourses_admin/al_login/${act_c_id}?fn=${encodeURI(fn)}`);
     }
-    if (req.session.al_pass != act_c_id) {
-        return res.redirect(`/internal/activitycourses/al_login/${act_c_id}?fn=${encodeURI(fn)}`);
+    if (req.session.al_adm_pass != act_c_id) {
+        return res.redirect(`/internal/activitycourses_admin/al_login/${act_c_id}?fn=${encodeURI(fn)}`);
     }
     next();
 }
@@ -51,12 +53,12 @@ router.get('/', (req, res, next) => {
         res.render('activitycourses_admin/index.pug', {
             profile: req.user,
             books: entity,
-            al_pass: req.session.al_pass
+            al_pass: req.session.al_adm_pass
         });
     });
 });
 //for autor
-router.get('/al_list/:book', authRequired, (req, res, next) => {
+router.get('/al_list/:book', admin_authRequired, (req, res, next) => {
     let act_c_id = req.params.book;
     let fn = req.query.fn ? req.query.fn : "";
     getModel().ReadActLessons(act_c_id, (err, entity) => {
@@ -74,7 +76,7 @@ function fmt_time() {
     let HH = d.getHours(), MM = d.getMinutes(), SS = d.getSeconds(), MS = d.getMilliseconds();
     return Y + '' + (M < 10 ? "0" + M : M) + '' + (D < 10 ? "0" + D : D) + "" + (HH < 10 ? '0' + HH : HH) + "" + (MM < 10 ? "0" + MM : MM) //+ ":" + SS +":" + MS;
 }
-router.get('/al_list/:book/add', authRequired, (req, res, next) => {
+router.get('/al_list/:book/add', admin_authRequired, (req, res, next) => {
     let act_c_id = req.params.book;
     let fn = req.query.fn ? req.query.fn : "";
     let al_datetime = fmt_time()
@@ -90,7 +92,7 @@ router.get('/al_list/:book/add', authRequired, (req, res, next) => {
         action: 'Add'
     });
 });
-router.post('/al_list/:book/add', authRequired, images.multer.single('image'), (req, res, next) => {
+router.post('/al_list/:book/add', admin_authRequired, images.multer.single('image'), (req, res, next) => {
     let act_c_id = req.params.book;
     let fn = req.query.fn ? req.query.fn : "";
     const data = req.body;
@@ -104,7 +106,7 @@ router.post('/al_list/:book/add', authRequired, images.multer.single('image'), (
     });
 }
 );
-router.get('/al_list/:book/view/:alid', authRequired, (req, res, next) => {
+router.get('/al_list/:book/view/:alid', admin_authRequired, (req, res, next) => {
     let act_c_id = req.params.book;
     let alid = req.params.alid;
     let fn = req.query.fn ? req.query.fn : "";
@@ -119,7 +121,7 @@ router.get('/al_list/:book/view/:alid', authRequired, (req, res, next) => {
         });
     });
 });
-router.get('/al_list/:book/edit/:alid', authRequired, (req, res, next) => {
+router.get('/al_list/:book/edit/:alid', admin_authRequired, (req, res, next) => {
     let act_c_id = req.params.book;
     let alid = req.params.alid;
     let fn = req.query.fn ? req.query.fn : "";
@@ -134,7 +136,7 @@ router.get('/al_list/:book/edit/:alid', authRequired, (req, res, next) => {
         });
     });
 });
-router.post('/al_list/:book/edit/:alid', images.multer.single('image'), authRequired, (req, res, next) => {
+router.post('/al_list/:book/edit/:alid', images.multer.single('image'), admin_authRequired, (req, res, next) => {
     let act_c_id = req.params.book;
     let alid = req.params.alid;
     let fn = req.query.fn ? req.query.fn : "";
@@ -150,7 +152,56 @@ router.post('/al_list/:book/edit/:alid', images.multer.single('image'), authRequ
         });
     });
 });
-
+router.get('/as_list/:book/edit', admin_authRequired, (req, res, next) => {
+    let act_c_id = req.params.book;
+    let fn = req.query.fn ? req.query.fn : "";
+    getModel().ReadActStud(act_c_id, (err, entity) => {
+        if (err) { next(err); return; }
+        res.render('activitycourses_admin/as_form.pug', {
+            act_c_id: act_c_id,
+            profile: req.user,
+            books: entity,
+            fn: fn,
+        });
+    });
+});
+router.post('/as_list/:book/edit', images.multer.single('image'), admin_authRequired, (req, res, next) => {
+    //ALTER TABLE `eschool`.`studinfo` ADD INDEX `cno_seat` ( `CURR_CLASS` ASC,`CURR_SEAT` ASC);
+    let act_c_id = req.params.book;
+    let fn = req.query.fn ? req.query.fn : "";
+    let data=JSON.parse(req.body.STUDLIST)
+    console.log(data)
+    let cond1=[]
+    for(let temp_ of data)
+    {
+        if(temp_){
+        let classno=temp_.substring(0,4)
+        let seat=temp_.substring(4)
+        cond1.push(`(curr_class='${classno}' and curr_seat='${seat}')`)
+        }
+    }
+    if(cond1.length>0){
+    getModel().ReadStudByClassSeat(cond1.join(" or "),act_c_id,fn,(err, entity) => {
+        if (err) { next(err); return; }
+        res.render('activitycourses_admin/as_form.pug', {
+            act_c_id: act_c_id,
+            profile: req.user,
+            books: entity,
+            fn: fn,
+        });
+    });
+    }else{
+        res.end(JSON.stringify(req.body)+cond1.join(" or "))
+    }
+});
+router.get('/as_list/:book/delete/:as_id', admin_authRequired, (req, res, next) => {
+    let act_c_id = req.params.book;
+    let as_id=req.params.as_id;
+    getModel().DeleteActStud(act_c_id,as_id, (err, entity) => {
+        if (err) { next(err); return; }
+        res.end(JSON.stringify(entity.affectedRows));
+    });
+});
 router.get('/al_login/:book', (req, res, next) => {
     let act_c_id = req.params.book;
     let act = req.query.fn;
@@ -163,20 +214,24 @@ router.get('/al_login/:book', (req, res, next) => {
 router.post('/al_login/:book', images.multer.single('image'), (req, res, next) => {
     let act_c_id = req.body.ActID;
     let fn = req.body.Act;
-    if (req.body.password == act_c_id+"2718") {
-        req.session.al_pass = act_c_id
-        return res.redirect(`/internal/activitycourses_admin/al_list/${act_c_id}?fn=${encodeURI(fn)}`);
-    }
-    return res.redirect(`/internal/activitycourses_admin/al_login/${act_c_id}?fn=${encodeURI(fn)}`);
+    getModel().ReadActDefbyId(act_c_id, (err, entity) => {
+        if (err) { next(err); return; }
+        if (req.body.password == entity[0].pwd_adm) {
+            req.session.al_adm_pass = act_c_id
+            return res.redirect(`/internal/activitycourses_admin/al_list/${act_c_id}?fn=${encodeURI(fn)}`);
+        }else{
+            return res.redirect(`/internal/activitycourses_admin/al_login/${act_c_id}?fn=${encodeURI(fn)}`);
+        }
+    });
 });
 
 router.get('/al_logout', (req, res, next) => {
-    req.session.al_pass = null;
+    req.session.al_adm_pass = null;
     return res.redirect(`/internal/activitycourses_admin`);
 });
 
 //for act mng
-router.get('/cnolist', authRequired, (req, res, next) => {
+router.get('/cnolist', admin_authRequired, (req, res, next) => {
     res.render('markup/actmng/cnolist.pug', {
         profile: req.user,
         esess: req.user.marksys_info[0][0],
@@ -185,7 +240,7 @@ router.get('/cnolist', authRequired, (req, res, next) => {
     });
 });
 
-router.get('/actlist', authRequired, (req, Response, next) => {
+router.get('/actlist', admin_authRequired, (req, Response, next) => {
     let aot = GetAOT(req);
     let sid = GetSID(req);
     let cno = 'actcid';
@@ -204,7 +259,7 @@ router.get('/actlist', authRequired, (req, Response, next) => {
     });
 });
 
-router.post('/actlistUpdate', authRequired, images.multer.single('image'), (req, Response, next) => {
+router.post('/actlistUpdate', admin_authRequired, images.multer.single('image'), (req, Response, next) => {
     let staf = req.user ? req.user.id : null;
     let aot = req.query.aot;
     let sid = GetSID(req);
@@ -215,7 +270,7 @@ router.post('/actlistUpdate', authRequired, images.multer.single('image'), (req,
     });
 });
 
-router.get('/actGrade/:book/edit', authRequired, (req, Response, next) => {
+router.get('/actGrade/:book/edit', admin_authRequired, (req, Response, next) => {
     let aot = GetAOT(req);
     let sid = GetSID(req);
     let cno = req.params.book;
@@ -236,7 +291,7 @@ router.get('/actGrade/:book/edit', authRequired, (req, Response, next) => {
 });
 ////
 
-router.get('/studGrade/:book/edit', authRequired, (req, Response, next) => {
+router.get('/studGrade/:book/edit', admin_authRequired, (req, Response, next) => {
     let aot = GetAOT(req);
     let sid = GetSID(req);
     let cno = req.params.book;
@@ -255,7 +310,7 @@ router.get('/studGrade/:book/edit', authRequired, (req, Response, next) => {
     });
 });
 
-router.post('/studGradeUpdate', authRequired, images.multer.single('image'), (req, Response, next) => {
+router.post('/studGradeUpdate', admin_authRequired, images.multer.single('image'), (req, Response, next) => {
     let staf = req.user ? req.user.id : null;
     let aot = req.query.aot;
     let sid = GetSID(req);
@@ -270,7 +325,7 @@ router.post('/studGradeUpdate', authRequired, images.multer.single('image'), (re
     }
 });
 
-router.get('/regStud/:book', authRequired, (req, Response, next) => {
+router.get('/regStud/:book', admin_authRequired, (req, Response, next) => {
     let cno = req.params.book;
     let rurl = encodeURI(req.baseUrl);
     getModel().ReadClassStudAct(cno, (err, entity) => {
@@ -286,7 +341,7 @@ router.get('/regStud/:book', authRequired, (req, Response, next) => {
     });
 });
 
-router.post('/regStud/markup_jsontwolist', authRequired, (req, Response, next) => {
+router.post('/regStud/markup_jsontwolist', admin_authRequired, (req, Response, next) => {
     let cno = req.query.cno;
     let sid = GetSID(req);
     let act_c_id = 900;

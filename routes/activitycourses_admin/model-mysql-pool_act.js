@@ -4,6 +4,24 @@ const mysqlcfg = require('../mysql250/mysql250config');
 
 const pool = mysqlcfg.esdbPool;
 
+
+function ReadActDefbyId(act_c_id,cb) {
+    //ALTER TABLE `eschool`.`active_course_def` 
+    //ADD COLUMN `pwd_adm` VARCHAR(45) NULL AFTER `pwd`;
+    pool.getConnection(function (err, connection) {
+        if (err) {
+            cb(err);
+            return;
+        }
+        connection.query(
+            'SELECT * FROM `active_course_def` WHERE act_c_id=?;', [act_c_id], (err, results) => {
+                if (err) { cb(err); return; }
+                cb(null, results);
+                connection.release();
+            });
+    });
+}
+
 function readclassact(staf_ref, cno,sid, cb) {
     pool.getConnection(function (err, connection) {
         if (err) {
@@ -155,6 +173,85 @@ function ReadActLessons(act_c_id,cb){
                 cb(null, results);
                 connection.release();
             });
+    });
+}
+function ReadActStud(act_c_id,cb){
+    pool.getConnection(function (err, connection) {
+        if (err) {
+            cb(err);
+            return;
+        }
+        connection.query(
+            'SELECT * FROM `active_stud` where act_c_id=? order by classno,seat', [act_c_id], (err, results) => {
+                if (err) { cb(err); return; }
+                cb(null, results);
+                connection.release();
+            });
+    });
+}
+function DeleteActStud(act_c_id,as_id,cb){
+    pool.getConnection(function (err, connection) {
+        if (err) {
+            cb(err);
+            return;
+        }
+        connection.query(
+            'Delete FROM `active_stud` where act_c_id=? and as_id=?', [act_c_id,as_id], (err, results) => {
+                if (err) { cb(err); return; }
+                cb(null, results);
+                connection.release();
+            });
+    });
+}
+async function ReadStudByClassSeat(ByClassSeat,act_c_id,fn,cb){
+    pool.getConnection(async function (err, connection)  {
+        if (err) {
+            cb(err);
+            return;
+        }
+        connection.query(
+            `SELECT stud_ref,curr_class as classno,curr_seat as seat,c_name FROM studinfo where ${ByClassSeat} order by curr_class,curr_seat`, [], async function (err, results)  {
+                if (err) { cb(err); return; }
+                let cnt=0;
+                for(let row of results){
+                    row["as_id"]=0
+                    row["act_c_id"]=act_c_id
+                    row["activeName"]=fn
+                    cnt += await new Promise((resolve, reject) => {
+                        connection.query(`insert  active_stud set  ?`,[row] , (err, res) => {
+                            if (err) { console.log(err); reject(err); }
+                            resolve(100);
+                        });
+                    });
+        
+                }
+                ReadActStud(act_c_id,cb)
+                connection.release();
+            });
+    });
+}
+async function UpdateActStud(data,act_c_id,fn,cb){
+    pool.getConnection(async function (err, connection) {
+        if (err) { cb(err); return; }
+        let cnt = 0;
+        let alist = Object.keys(data);
+        for (let i = 0; i < alist.length; i++) {
+            let key = alist[i];
+            let val= data[key]
+            let li = key.split('_');               
+            let aa_id=li[li.length-1]
+            let fieldname=li[0]
+            for(let i=1;i<li.length-1;i++) fieldname+="_"+li[i]
+            cnt += await new Promise((resolve, reject) => {
+                connection.query(`insert  active_stud set ${fieldname}=? where aa_id = ?`,[val,aa_id] , (err, res) => {
+                    if (err) { console.log(err); reject(err); }
+                    resolve(100);
+                });
+            });
+        }
+        //cb(null, Math.floor(cnt / 100));
+        ReadActStud(act_c_id,cb)
+        connection.release();
     });
 }
 function ReadActLessonStud(al_id,cb){
@@ -341,6 +438,7 @@ module.exports = {
     readclassact: readclassact,
     ReadClassStudAct:ReadClassStudAct,
     RegStudAct:RegStudAct,
+    ReadActDefbyId:ReadActDefbyId,
     UpdateMarkArr: UpdateMarkArr,
     UpdateAct: UpdateAct,
     ReadActDef:ReadActDef,
@@ -353,7 +451,12 @@ module.exports = {
     CreateActLesson:CreateActLesson,
     CloneActLessonStudList:CloneActLessonStudList,
     ReadActLessonStud:ReadActLessonStud,
-    UpdateActLessonStud:UpdateActLessonStud
+    UpdateActLessonStud:UpdateActLessonStud,
+    ReadActStud:ReadActStud,
+    UpdateActStud:UpdateActStud,
+    DeleteActStud:DeleteActStud,
+    ReadStudByClassSeat:ReadStudByClassSeat
+
 };
 
 if (module === require.main) {

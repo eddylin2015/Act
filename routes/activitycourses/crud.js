@@ -5,6 +5,7 @@ const http = require('http');
 const redis = require("redis");
 const client = redis.createClient();
 const netutils = require('../../lib/net_utils');
+const { ENOTDIR } = require('constants');
 
 function getModel() {
     return require(`./model-mysql-pool_act`);
@@ -168,7 +169,7 @@ router.post('/al_login/:book', images.multer.single('image'), (req, res, next) =
     
     getModel().ReadActDefbyId(act_c_id, (err, entity) => {
         if (err) { next(err); return; }
-        if (req.body.password == entity.pwd) {
+        if (req.body.password == entity[0].pwd) {
             req.session.al_pass = act_c_id
             return res.redirect(`/internal/activitycourses/al_list/${act_c_id}?fn=${encodeURI(fn)}`);
         }else{

@@ -18,10 +18,10 @@ html
             a(href="/internal/") 
               span(class="glyphicon") &#xe021
           li
-            a(href="/internal/activitycourses") 活動列表
+            a(href="/internal/activitycourses_admin") 活動列表
           if act_c_id
             li
-              a(href=`/internal/activitycourses/al_list/${act_c_id}?fn=${fn}`) 課表(#{act_c_id})            
+              a(href=`/internal/activitycourses_admin/al_list/${act_c_id}?fn=${fn}`) 課表(#{act_c_id})            
           //li
             a(href="/internal/markup/act/actlist") 活動列表
           //li
@@ -31,7 +31,7 @@ html
 
         p.navbar-text.navbar-right
           if al_pass
-            a(href="/internal/activitycourses/al_logout",style="color:green") (exit)#{al_pass}            
+            a(href="/internal/activitycourses_admin/al_logout",style="color:green") (exit)#{al_pass}            
           if profile
             if profile.image
               img.img-circle(src=profile.image, width=24)
