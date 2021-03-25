@@ -19,18 +19,20 @@ block content
           td#MB_H.tdh teacher
           td#MC_H.tdh SPK
           td#MD_H.tdh password
+          td#ME_H.tdh pass_adm
         each book in books
           tr
-            td.tdh
-              a(href=`actGrade/${book.act_c_id}/edit`)= book.act_c_id
+            td.tdh= book.act_c_id
+              //a(href=`actGrade/${book.act_c_id}/edit`)= book.act_c_id
             td.M(id=`MA_activeName_${book.act_c_id}`,style='text-align:left')= book.activeName
             td.M(id=`MB_teacher_${book.act_c_id}`,style='text-align:left')= book.teacher
             td.M(id=`MC_SPK_${book.act_c_id}`,align='right')= book.SPK
             td.M(id=`MD_pwd_${book.act_c_id}`,align='right')= book.pwd
+            td.M(id=`ME_pwd-adm_${book.act_c_id}`,align='right')= book.pwd_adm
   script.
     var fn='!{fn}';
-    var PostUrl='/internal/markup/act/actlistUpdate?sid=!{sid}&aot=!{aot}&fn=!{fn}';    
-    var returnUrl='/internal/markup/act';
+    var PostUrl='/internal/activitycourses_admin/actlistUpdate?fn=!{fn}';    
+    var returnUrl='/internal/activitycourses_admin';
     var CGIExpXlsUrl='/internal/PublicAPI/ExpXls.php?charset=utf-8&filename=mark_!{fn}.xls';
     $('#returnUrlBtn').attr("href", returnUrl);
     $('#CSVFrmPOST').attr("action", CGIExpXlsUrl);

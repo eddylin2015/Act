@@ -26,11 +26,30 @@ function authRequired(req, res, next) {
     }
     next();
 }
+function checkuser(req) {
+    //	CHEONGIEKCHAO@mail.mbc.edu.mo
+    // 	LEONGFONGHIO@mail.mbc.edu.mo
+    //  LEITINMAN@mail.mbc.edu.mo
+    //  leitinman@mail.mbc.eud.mo
+    
+    if(!req.user) return false;
+    let email=typeof req.user.email === "string" ? req.user.email:req.user.email[0];
+    if (email === "cool@mo") return true;
+    if (email === "cheongiekchao@mail.mbc.edu.mo") return true;
+    if (email === "leongfonghio@mail.mbc.edu.mo") return true;
+    if (email === "leitinman@mail.mbc.eud.mo") return true;
+    if (email === "leongfonghio@mail.mbc.edu.mo") return true;    
+    if (email === "lammou@mail.mbc.edu.mo") return true;
+    if (email === "joe853.hong@mail.mbc.edu.mo") return true;
+    if (email === "fongsioman@mail.mbc.edu.mo") return true;
+    return false;
+  }
 function admin_authRequired(req, res, next) {
     let act_c_id = req.params.book;
     let fn = req.query.fn ? req.query.fn : "";
-    if (req.user) {
+    if (req.user&&checkuser(req) ) {
         req.session.al_adm_pass = act_c_id
+        return next();
     }
     if (!req.session.al_adm_pass) {
         return res.redirect(`/internal/activitycourses_admin/al_login/${act_c_id}?fn=${encodeURI(fn)}`);
@@ -240,28 +259,20 @@ router.get('/cnolist', admin_authRequired, (req, res, next) => {
 });
 
 router.get('/actlist', admin_authRequired, (req, Response, next) => {
-    let aot = GetAOT(req);
-    let sid = GetSID(req);
     let cno = 'actcid';
-    let staf_ref = netutils.id2staf(req.user);
     getModel().ReadActDef((err, entity) => {
         if (err) { next(err); return; }
-        Response.render('markup/actmng/editActList.pug', {
+        Response.render('activitycourses_admin/editActList.pug', {
             profile: req.user,
             fn: `${cno}_act`,
             cno: cno,
             books: entity,
             editable: req.query.r,
-            aot: aot,
-            sid: sid
         });
     });
 });
 
 router.post('/actlistUpdate', admin_authRequired, images.multer.single('image'), (req, Response, next) => {
-    let staf = req.user ? req.user.id : null;
-    let aot = req.query.aot;
-    let sid = GetSID(req);
     let data = JSON.parse(req.body.datajson)
     getModel().UpdateActDef(data, (err, entity) => {
         if (err) { next(err); return; }

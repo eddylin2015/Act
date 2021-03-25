@@ -2,7 +2,7 @@
 var fs = require('fs');
 var redis = require("redis"),
     client = redis.createClient();
-var records = [{ id: 1, username: 'admin', password: '12567', displayName: 'admin', emails: [{ value: 'cool@mo' }], encode_username: "", marksys_flag: 0, marksys_info: null, Theme: 8 }];
+var records = [{ id: 1, username: 'cool', password: '3.14', displayName: 'admin', email: 'cool@mo', encode_username: "", marksys_flag: 0, marksys_info: null, Theme: 8 }];
 function encode_key(x) {
     var d = new Date();
     var n = d.getDate();
@@ -66,10 +66,15 @@ exports.removeUser = function (id, cb) {
 
 exports.findByUsernamePassword = function (username, password, cb) {
     process.nextTick(function () {
-        Login8082API(username, password, cb);
+        for (var i = 0, len = records.length; i < len; i++) {
+            var record = records[i];
+            if (record.username === username && record.password === password) {
+                return cb(null, record);
+            }
+        }
+        return cb(null, null);
     });
 }
-
 function ReadFromRedis(id, password) {
     return new Promise(resolve => {
         client.hget("Users", id.toString(), function (err, result) {

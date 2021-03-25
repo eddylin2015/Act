@@ -22,8 +22,9 @@ html
           if act_c_id
             li
               a(href=`/internal/activitycourses_admin/al_list/${act_c_id}?fn=${fn}`) 課表(#{act_c_id})            
-          //li
-            a(href="/internal/markup/act/actlist") 活動列表
+          if profile    
+            li
+              a(href="/internal/activitycourses_admin/actlist") 活動項目管理
           //li
             a(href="/internal/markup/act/cnolist?cno=P") 小學活動分
           //li
