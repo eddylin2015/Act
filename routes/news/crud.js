@@ -66,6 +66,11 @@ router.use((req, res, next) => {
     next();
 });
 
+//
+//xml/news.xml
+//RSS-Feeds
+//RSS-Feeds/NewsRelease
+
 router.get('/', (req, res, next) => {
     getModel().ReadActDef((err, entity) => {
         if (err) { next(err); return; }
@@ -76,6 +81,38 @@ router.get('/', (req, res, next) => {
         });
     });
 });
+
+router.get('/xml/news.xml', (req, res, next) => {
+    getModel().ReadItems((err, entity) => {
+        if (err) { next(err); return; }
+        res.render('news/xml/xml_format.pug', {
+            profile: req.user,
+            books: entity,
+            al_pass: req.session.al_adm_pass
+        });
+    });
+});
+router.get('/RSS-Feeds', (req, res, next) => {
+    getModel().ReadItems((err, entity) => {
+        if (err) { next(err); return; }
+        res.render('news/xml/xml_format.pug', {
+            profile: req.user,
+            books: entity,
+            al_pass: req.session.al_adm_pass
+        });
+    });
+});
+router.get('/RSS-Feeds/NewsRelease', (req, res, next) => {
+    getModel().ReadItems((err, entity) => {
+        if (err) { next(err); return; }
+        res.render('news/xml/xml_format.pug', {
+            profile: req.user,
+            books: entity,
+            al_pass: req.session.al_adm_pass
+        });
+    });
+});
+
 
 //for autor
 router.get('/al_list/:book', admin_authRequired, (req, res, next) => {

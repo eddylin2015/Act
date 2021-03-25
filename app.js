@@ -49,6 +49,7 @@ app.get('/reqcnt', function (req, res) { res.end(`${CntClusterReqs}  , ${process
 
 app.use(routes);
 
+app.use('/news',require('./routes/news/crud'));
 app.use('/internal/activitycourses',require('./routes/activitycourses/crud'));
 app.use('/internal/activitycourses_admin',require('./routes/activitycourses_admin/crud'));
 

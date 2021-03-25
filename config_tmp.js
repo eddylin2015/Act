@@ -47,6 +47,11 @@ nconf
     MYSQL_250_host: '127.0.0.1',
     MYSQL_250_user: 'user',
     MYSQL_250_password: '123',
+    MYSQL_NEWS_host: '127.0.0.1',
+    MYSQL_NEWS_user: 'user',
+    MYSQL_NEWS_password: '123',
+    MYSQL_NEWS_db:'db',
+
     API_SP_TOKEN:"key"
   });
 // Check for required settings
