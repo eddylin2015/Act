@@ -6,7 +6,6 @@ var OriginalData = null;
 var PostUrl = null;
 var _Field_Defs = null;
 ////////Program Start
-function BindingZeroClipboard(id, tablename) { }
 function bind_txtinput_paste($txtinput, cell) {
 	$txtinput.bind('paste', function (e) {
 		var txt = e.originalEvent.clipboardData.getData('Text');
@@ -53,13 +52,11 @@ function bind_txtinput_paste($txtinput, cell) {
 					}
 					f_cell = f_cell.next();
 				}
-
 				for (rid = 0; rid < rowcnt; rid++) {
 					for (cid = 0; cid < colcnt; cid++) {
 						if (c_cell.has(":input").length > 0) {
 							input = c_cell.children();
 							strv = input.val(f_data_arr[rid][cid]);
-
 						} else {
 							c_cell.text(f_data_arr[rid][cid]);
 						}
@@ -71,7 +68,6 @@ function bind_txtinput_paste($txtinput, cell) {
 				}
 				return false;
 			} else { return true; }
-
 		}
 	});
 }

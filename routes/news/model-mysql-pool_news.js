@@ -1,10 +1,94 @@
 ﻿'use strict';
 const mysql = require('mysql');
-const mysqlcfg = require('../mysql250/mysql250config');
 
-const pool = mysqlcfg.esdbPool;
+const config = require('../../config');
+const options = {
+    host: config.get('MYSQL_NEWS_host'),
+    user: config.get('MYSQL_NEWS_user'),
+    password: config.get('MYSQL_NEWS_password'),
+    database: config.get('MYSQL_NEWS_db'),
+    multipleStatements: true,
+    connectionLimit: 30,
+    //acquireTimeout: 50000
+};
+const pool = mysql.createPool(options);
 
+`
+CREATE SCHEMA news DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin ;
+CREATE TABLE news.items (
+    iid INT(3) UNSIGNED NOT NULL AUTO_INCREMENT,
+    title VARCHAR(64) NULL,
+    description TEXT(256) NULL,
+    link VARCHAR(128) NULL,
+    category VARCHAR(45) NULL,
+    pubDate VARCHAR(45) NULL,
+    author VARCHAR(45) NULL,
+    guid VARCHAR(45) NULL,
+    endDate VARCHAR(45) NULL,
+    pubFlag INT(1) NULL DEFAULT 0,
+    PRIMARY KEY (iid));
+`
 
+function fmt_time() {
+    let d = new Date(), Y = d.getFullYear(), M = d.getMonth() + 1, D = d.getDate();
+    let HH = d.getHours(), MM = d.getMinutes(), SS = d.getSeconds(), MS = d.getMilliseconds();
+    return Y + '' + (M < 10 ? "0" + M : M) + '' + (D < 10 ? "0" + D : D) + "T" + (HH < 10 ? '0' + HH : HH) + ":" + (MM < 10 ? "0" + MM : MM) + ":" +(SS < 10 ? "0" + SS : SS) // SS +":" + MS;
+}
+
+function ReadpubItems(cb) {
+    let nowDate=fmt_time()
+    pool.getConnection(function (err, connection) {
+        if (err) {
+            cb(err);
+            return;
+        }
+        connection.query(
+            'SELECT * FROM `items` WHERE pubFlag=1 and pubDate < ?;', [nowDate], (err, results) => {
+                if (err) { cb(err); return; }
+                cb(null, results);
+                connection.release();
+            });
+    });
+}
+
+function ReadItemsByCategory(category,cb) {
+    pool.getConnection(function (err, connection) {
+        if (err) {
+            cb(err);
+            return;
+        }
+        connection.query(
+            'SELECT * FROM `items` where category=? ', [category], (err, results) => {
+                if (err) { cb(err); return; }
+                cb(null, results);
+                connection.release();
+            });
+    });
+}
+async function UpdateItemsByCategory(data,category,cb){
+    pool.getConnection(async function (err, connection) {
+        if (err) { cb(err); return; }
+        let cnt = 0;
+        let alist = Object.keys(data);
+        for (let i = 0; i < alist.length; i++) {
+            let key = alist[i];
+            let val= data[key]
+            let li = key.split('_');               
+            let iid=li[li.length-1]
+            let fieldname=li[1]
+            for(let i=2;i<li.length-1;i++) fieldname+="_"+li[i]
+            cnt += await new Promise((resolve, reject) => {
+                connection.query(`update items set ${fieldname}=? where iid = ? and category=?`,[val,iid,category] , (err, res) => {
+                    if (err) { console.log(err); reject(err); }
+                    resolve(100);
+                });
+            });
+        }
+        cb(null, Math.floor(cnt / 100));
+        //ReadActLessonStud(al_id,cb)
+        connection.release();
+    });
+}
 function ReadActDefbyId(act_c_id,cb) {
     //ALTER TABLE `eschool`.`active_course_def` ADD COLUMN `pwd_adm` VARCHAR(45) NULL AFTER `pwd`;
     pool.getConnection(function (err, connection) {
@@ -433,6 +517,9 @@ function read(staf_ref, id, cb) {
 }
 //Course Sub ITEM END..
 module.exports = {
+    ReadpubItems:ReadpubItems,
+    ReadItemsByCategory:ReadItemsByCategory,
+    UpdateItemsByCategory:UpdateItemsByCategory,
     createSchema: createSchema,
     readclassact: readclassact,
     ReadClassStudAct:ReadClassStudAct,

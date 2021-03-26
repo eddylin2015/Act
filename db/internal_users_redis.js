@@ -2,7 +2,7 @@
 var fs = require('fs');
 var redis = require("redis"),
     client = redis.createClient();
-var records = [{ id: 1, username: 'cool', password: '3.14', displayName: 'admin', email: 'cool@mo', encode_username: "", marksys_flag: 0, marksys_info: null, Theme: 8 }];
+var records = [{ id: 1, username: 'cool', password: '314', displayName: 'admin', email: 'cool@mo', encode_username: "", marksys_flag: 0, marksys_info: null, Theme: 8 }];
 function encode_key(x) {
     var d = new Date();
     var n = d.getDate();

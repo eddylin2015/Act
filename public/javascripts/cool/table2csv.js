@@ -1,4 +1,5 @@
 function exportTableToCSV($table, filename) {
+    console.log($table,filename)
     var $rows = $table.find('tr:has(td)'),
     // Temporary delimiter characters unlikely to be typed by keyboard
     // This is to avoid accidentally splitting the actual contents
@@ -26,7 +27,7 @@ function exportTableToCSV($table, filename) {
         // HTML5 Blob        
         var blob = new Blob([universalBOM+csv], { type: 'text/csv;charset=utf8'});
         var csvUrl = URL.createObjectURL(blob);
-        console.log(csvUrl);
+        //console.log(csvUrl);
         $(this).attr({'download': filename,'href': csvUrl });
      } 
      else 

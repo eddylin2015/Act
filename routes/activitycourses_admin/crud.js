@@ -69,7 +69,7 @@ router.use((req, res, next) => {
 router.get('/', (req, res, next) => {
     getModel().ReadActDef((err, entity) => {
         if (err) { next(err); return; }
-        res.render('news/index.pug', {
+        res.render('activitycourses_admin/index.pug', {
             profile: req.user,
             books: entity,
             al_pass: req.session.al_adm_pass

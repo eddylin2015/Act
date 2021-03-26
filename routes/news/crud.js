@@ -9,7 +9,7 @@ const { json } = require('body-parser');
 const { compileClientWithDependenciesTracked } = require('pug');
 
 function getModel() {
-    return require(`./model-mysql-pool_act`);
+    return require(`./model-mysql-pool_news`);
 }
 
 function authRequired(req, res, next) {
@@ -31,17 +31,12 @@ function checkuser(req) {
     // 	LEONGFONGHIO@mail.mbc.edu.mo
     //  LEITINMAN@mail.mbc.edu.mo
     //  leitinman@mail.mbc.eud.mo
-    
     if(!req.user) return false;
     let email=typeof req.user.email === "string" ? req.user.email:req.user.email[0];
-    if (email === "cool@mo") return true;
-    if (email === "cheongiekchao@mail.mbc.edu.mo") return true;
-    if (email === "leongfonghio@mail.mbc.edu.mo") return true;
-    if (email === "leitinman@mail.mbc.eud.mo") return true;
-    if (email === "leongfonghio@mail.mbc.edu.mo") return true;    
-    if (email === "lammou@mail.mbc.edu.mo") return true;
-    if (email === "joe853.hong@mail.mbc.edu.mo") return true;
-    if (email === "fongsioman@mail.mbc.edu.mo") return true;
+    if (email === "cool@mo") {req.session.items_category="其他"; return  true};
+    if (email === "lammou@mail.mbc.edu.mo") {req.session.items_category="其他"; return  true};
+    if (email === "joe853.hong@mail.mbc.edu.mo") {req.session.items_category="其他"; return  true};
+    if (email === "fongsioman@mail.mbc.edu.mo") {req.session.items_category="信息"; return  true};
     return false;
   }
 function admin_authRequired(req, res, next) {
@@ -61,6 +56,12 @@ function admin_authRequired(req, res, next) {
 }
 const router = express.Router();
 
+function fmt_time() {
+    let d = new Date(), Y = d.getFullYear(), M = d.getMonth() + 1, D = d.getDate();
+    let HH = d.getHours(), MM = d.getMinutes(), SS = d.getSeconds(), MS = d.getMilliseconds();
+    return Y + '' + (M < 10 ? "0" + M : M) + '' + (D < 10 ? "0" + D : D) + "T" + (HH < 10 ? '0' + HH : HH) + ":" + (MM < 10 ? "0" + MM : MM) + ":" +(SS < 10 ? "0" + SS : SS) // SS +":" + MS;
+}
+
 router.use((req, res, next) => {
     res.set('Content-Type', 'text/html');
     next();
@@ -72,13 +73,36 @@ router.use((req, res, next) => {
 //RSS-Feeds/NewsRelease
 
 router.get('/', (req, res, next) => {
-    getModel().ReadActDef((err, entity) => {
+    getModel().ReadpubItems((err, entity) => {
         if (err) { next(err); return; }
         res.render('news/index.pug', {
             profile: req.user,
             books: entity,
-            al_pass: req.session.al_adm_pass
         });
+    });
+});
+router.get('/items', admin_authRequired, (req, Response, next) => {
+    if(!req.session.items_category) return Response.end("end.")
+    let cno = 'news';
+    let category=req.session.items_category
+    getModel().ReadItemsByCategory(category,(err, entity) => {
+        if (err) { next(err); return; }
+        Response.render('news/editItems.pug', {
+            profile: req.user,
+            fn: `${cno}_items`,
+            cno: cno,
+            books: entity,
+            editable: req.query.r,
+        });
+    });
+});
+
+router.post('/itemsUpdate', admin_authRequired, images.multer.single('image'), (req, Response, next) => {
+    let data = JSON.parse(req.body.datajson)
+    let category=req.session.items_category
+    getModel().UpdateItemsByCategory(data, category, (err, entity) => {
+        if (err) { next(err); return; }
+        Response.end(`更新${entity}筆...`);
     });
 });
 
@@ -128,11 +152,6 @@ router.get('/al_list/:book', admin_authRequired, (req, res, next) => {
         });
     });
 });
-function fmt_time() {
-    let d = new Date(), Y = d.getFullYear(), M = d.getMonth() + 1, D = d.getDate();
-    let HH = d.getHours(), MM = d.getMinutes(), SS = d.getSeconds(), MS = d.getMilliseconds();
-    return Y + '' + (M < 10 ? "0" + M : M) + '' + (D < 10 ? "0" + D : D) + "" + (HH < 10 ? '0' + HH : HH) + "" + (MM < 10 ? "0" + MM : MM) //+ ":" + SS +":" + MS;
-}
 router.get('/al_list/:book/add', admin_authRequired, (req, res, next) => {
     let act_c_id = req.params.book;
     let fn = req.query.fn ? req.query.fn : "";
@@ -296,27 +315,7 @@ router.get('/cnolist', admin_authRequired, (req, res, next) => {
     });
 });
 
-router.get('/actlist', admin_authRequired, (req, Response, next) => {
-    let cno = 'actcid';
-    getModel().ReadActDef((err, entity) => {
-        if (err) { next(err); return; }
-        Response.render('activitycourses_admin/editActList.pug', {
-            profile: req.user,
-            fn: `${cno}_act`,
-            cno: cno,
-            books: entity,
-            editable: req.query.r,
-        });
-    });
-});
 
-router.post('/actlistUpdate', admin_authRequired, images.multer.single('image'), (req, Response, next) => {
-    let data = JSON.parse(req.body.datajson)
-    getModel().UpdateActDef(data, (err, entity) => {
-        if (err) { next(err); return; }
-        Response.end(`更新${entity}筆...`);
-    });
-});
 
 router.get('/actGrade/:book/edit', admin_authRequired, (req, Response, next) => {
     let aot = GetAOT(req);

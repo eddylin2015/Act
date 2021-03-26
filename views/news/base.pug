@@ -12,14 +12,16 @@ html
     .navbar.navbar-default
       .container
         .navbar-header
-          .navbar-brand 活動課點名
+          .navbar-brand 新聞
         ul.nav.navbar-nav
           li
             a(href="/internal/") 
               span(class="glyphicon") &#xe021
           li
-            a(href="/internal/activitycourses") 活動列表
-          if act_c_id
+            a(href="/news/list") 列表              
+          li
+            a(href="/news/items") 表格
+          //if act_c_id
             li
               a(href=`/internal/activitycourses/al_list/${act_c_id}?fn=${fn}`) 課表(#{act_c_id})            
           //li
