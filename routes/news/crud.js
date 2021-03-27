@@ -213,6 +213,52 @@ router.post('/mng_itemsUpdate', admin_authRequired, images.multer.single('image'
     });
 });
 
+router.get('/sync', (req, res, next) => {
+    const { execFile } = require('child_process');
+    const child = execFile('node', [process.cwd()+'/childproc/ES_NEWS.js'], (error, stdout, stderr) => {
+    if (error) {
+      throw error;
+    }
+    res.end(stdout);
+    });
+});
+router.post(
+    '/sync/item/:book',
+    images.multer.single('image'), 
+    (req, res, next) => {
+      if (req.query.token && config.get("API_SP_TOKEN")) {
+      }else  if(req.user.id == 2 ) {
+      }else{res.end("error!") ;return;}
+    const data = req.body;
+    getModel().update(req.params.book,data.category, data, (err, savedData) => {
+        if (err) {
+            next(err);
+            return;
+          }
+          res.end(`${savedData.id}`);
+        });
+  });
+  router.post(
+    '/sync/itemSet',
+    images.multer.single('image'), 
+    (req, res, next) => {
+      if (req.query.token && config.get("API_SP_TOKEN")) {
+      }else  if(req.user.id == 2 ) {
+      }else{res.end("error!") ;return;}
+    const data =JSON.parse( req.body);
+    for (let i=0;i<data.length;i++){
+    let iid=data[i].iid
+    getModel().updateByIID(iid, data[i], (err, savedData) => {
+        if (err) {
+            next(err);
+            return;
+          }
+          //res.end(`${savedData.id}`);
+        });
+    }
+    res.end("end.")
+  });
+
 router.get('/xml/news.xml', (req, res, next) => {
     getModel().ReadItems((err, entity) => {
         if (err) { next(err); return; }

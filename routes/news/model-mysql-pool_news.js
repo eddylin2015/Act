@@ -567,6 +567,21 @@ function update( id, category, data, cb) {
             });
     });
 }
+function updateByIID( id,  data, cb) {
+    pool.getConnection(function (err, connection) {
+        if(err){cb(err);return;}
+        connection.query(
+            'UPDATE `items` SET ?  WHERE `iid` = ?', [data,id],  (err,results) => {   //and `createdById` = ?
+                if (err) {
+                    cb(err);
+                    return;
+                }
+                cb(null,results)
+                //read( id,category, cb);
+                connection.release();
+            });
+    });
+}
 //Course Sub ITEM END..
 module.exports = {
     ReadpubItems:ReadpubItems,
@@ -576,7 +591,7 @@ module.exports = {
     UpdateItemsByMng:UpdateItemsByMng,
     read: read,
     update:update,
-
+    updateByIID:updateByIID,
     createSchema: createSchema,
     readclassact: readclassact,
     ReadClassStudAct:ReadClassStudAct,
