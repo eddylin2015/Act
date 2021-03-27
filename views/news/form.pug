@@ -1,0 +1,39 @@
+﻿extends ./base.pug  
+
+block content
+  style.
+    textarea{color:black;}
+  script(src='/javascripts/jquery.js')
+  script(src='/javascripts/bootstrap.js')
+  
+  script(src='/jquery-ui-dist/jquery-ui.js')
+  link(rel='stylesheet', href='/jquery-ui-dist/jquery-ui.css')
+  script(src='/javascripts/cool/attend/autocomplete_studlist.js?r=1')
+  h3 #{action} News
+  form(method="POST", enctype="multipart/form-data")
+    .form-group.hidden
+      label(for="iid") iid
+      input.form-control(type="text", name="iid", id="iid", value=book.iid)
+    .form-group
+      label(for="title") 標題
+      input.form-control(type="text", name="title", id="title",value=book.title)
+    .form-group
+      label(for="description") 描述
+      textarea.form-control(name="description",  rows="10")= book.description
+    .form-group
+      label(for="link") link
+      input.form-control(type="text", name="link", id="link",value=book.link)
+    .form-group
+      label(for="pubDate") pubDate
+      input.form-control(type="text", name="pubDate", id="pubDate",value=book.pubDate)
+    .form-group
+      label(for="author") author
+      input.form-control(type="text", name="author", id="author",value=book.author)
+    .form-group
+      label(for="title") guid
+      input.form-control(type="text", name="guid", id="guid",value=book.guid)
+    .form-group
+      label(for="pubFlag") pubFlag
+      input.form-control(type="text", name="pubFlag", id="pubFlag",value=book.pubFlag)
+
+    button.btn.btn-success(type="submit") Save

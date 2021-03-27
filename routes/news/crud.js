@@ -81,6 +81,89 @@ router.get('/', (req, res, next) => {
         });
     });
 });
+router.get('/list', admin_authRequired, (req, Response, next) => {
+    if(!req.session.items_category) return Response.end("end.")
+    let cno = 'news';
+    let category=req.session.items_category
+    getModel().ReadItemsByCategory(category,(err, entity) => {
+        if (err) { next(err); return; }
+        Response.render('news/list.pug', {
+            profile: req.user,
+            fn: `${cno}_items`,
+            cno: cno,
+            books: entity,
+            editable: req.query.r,
+        });
+    });
+});
+
+/**
+   * GET /books/:id
+   *
+   * Display a book.
+   */
+ router.get('/item/:book', (req, res, next) => {
+    if(!req.session.items_category) return Response.end("end.")
+    let cno = 'news';
+    let category=req.session.items_category
+
+    getModel().read(req.params.book,category, (err, entity) => {
+      if (err) {
+        next(err);
+        return;
+      }
+      res.render('news/view.pug', {
+        profile: req.user,
+        fn: `${cno}_items`,
+        cno: cno,
+        book: entity,
+      });
+    });
+  });
+  
+/**
+ * GET /books/:id/edit
+ *
+ * Display a book for editing.
+ */
+ router.get('/item/:book/edit', (req, res, next) => {
+    if(!req.session.items_category) return Response.end("end.")
+    let cno = 'news';
+    let category=req.session.items_category     
+    getModel().read(req.params.book,category, (err, entity) => {
+      if (err) {
+        next(err);
+        return;
+      }
+      res.render('news/form.pug', {
+        book: entity,
+        action: 'Edit',
+      });
+    });
+  });
+  /**
+   * POST /books/:id/edit
+   *
+   * Update a book.
+   */
+  router.post(
+    '/item/:book/edit',
+    images.multer.single('image'),
+    (req, res, next) => {
+        if(!req.session.items_category) return Response.end("end.")
+        let cno = 'news';
+        let category=req.session.items_category        
+      const data = req.body;
+      getModel().update(req.params.book,category, data, (err, savedData) => {
+        if (err) {
+          next(err);
+          return;
+        }
+        res.redirect(`${req.baseUrl}/item/${savedData.iid}`);
+      });
+    }
+  );
+////
 router.get('/items', admin_authRequired, (req, Response, next) => {
     if(!req.session.items_category) return Response.end("end.")
     let cno = 'news';
@@ -101,6 +184,30 @@ router.post('/itemsUpdate', admin_authRequired, images.multer.single('image'), (
     let data = JSON.parse(req.body.datajson)
     let category=req.session.items_category
     getModel().UpdateItemsByCategory(data, category, (err, entity) => {
+        if (err) { next(err); return; }
+        Response.end(`更新${entity}筆...`);
+    });
+});
+router.get('/mng_items', admin_authRequired, (req, Response, next) => {
+    if(!req.session.items_category) return Response.end("end.")
+    let cno = 'news';
+    let category=req.session.items_category
+    getModel().ReadItemsByMng((err, entity) => {
+        if (err) { next(err); return; }
+        Response.render('news/editItems.pug', {
+            profile: req.user,
+            fn: `${cno}_items`,
+            cno: cno,
+            books: entity,
+            editable: req.query.r,
+        });
+    });
+});
+
+router.post('/mng_itemsUpdate', admin_authRequired, images.multer.single('image'), (req, Response, next) => {
+    let data = JSON.parse(req.body.datajson)
+    let category=req.session.items_category
+    getModel().UpdateItemsByMng(data,  (err, entity) => {
         if (err) { next(err); return; }
         Response.end(`更新${entity}筆...`);
     });

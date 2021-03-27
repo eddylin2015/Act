@@ -89,6 +89,44 @@ async function UpdateItemsByCategory(data,category,cb){
         connection.release();
     });
 }
+function ReadItemsByMng(category,cb) {
+    pool.getConnection(function (err, connection) {
+        if (err) {
+            cb(err);
+            return;
+        }
+        connection.query(
+            'SELECT * FROM `items` where category=? ', [category], (err, results) => {
+                if (err) { cb(err); return; }
+                cb(null, results);
+                connection.release();
+            });
+    });
+}
+async function UpdateItemsByMng(data,category,cb){
+    pool.getConnection(async function (err, connection) {
+        if (err) { cb(err); return; }
+        let cnt = 0;
+        let alist = Object.keys(data);
+        for (let i = 0; i < alist.length; i++) {
+            let key = alist[i];
+            let val= data[key]
+            let li = key.split('_');               
+            let iid=li[li.length-1]
+            let fieldname=li[1]
+            for(let i=2;i<li.length-1;i++) fieldname+="_"+li[i]
+            cnt += await new Promise((resolve, reject) => {
+                connection.query(`update items set ${fieldname}=? where iid = ? and category=?`,[val,iid,category] , (err, res) => {
+                    if (err) { console.log(err); reject(err); }
+                    resolve(100);
+                });
+            });
+        }
+        cb(null, Math.floor(cnt / 100));
+        //ReadActLessonStud(al_id,cb)
+        connection.release();
+    });
+}
 function ReadActDefbyId(act_c_id,cb) {
     //ALTER TABLE `eschool`.`active_course_def` ADD COLUMN `pwd_adm` VARCHAR(45) NULL AFTER `pwd`;
     pool.getConnection(function (err, connection) {
@@ -501,11 +539,11 @@ async function UpdateMarkArr(alist, cdids, aot, cb) {
     });
 }
 
-function read(staf_ref, id, cb) {
+function read( id,category, cb) {
     pool.getConnection(function (err, connection) {
         if (err) { cb(err); return; }
         connection.query(
-            'SELECT * FROM `mrs_stud_course` WHERE `course_d_id` = ? ', id, (err, results) => {
+            'SELECT * FROM `items` WHERE `iid` = ?  and category=?', [id,category], (err, results) => {
                 if (!err && !results.length) {
                     err = { code: 404, message: 'Not found' };
                 }
@@ -515,11 +553,30 @@ function read(staf_ref, id, cb) {
             });
     });
 }
+function update( id, category, data, cb) {
+    pool.getConnection(function (err, connection) {
+        if(err){cb(err);return;}
+        connection.query(
+            'UPDATE `items` SET ?  WHERE `iid` = ?  and category=?', [data,id,category],  (err) => {   //and `createdById` = ?
+                if (err) {
+                    cb(err);
+                    return;
+                }
+                read( id,category, cb);
+                connection.release();
+            });
+    });
+}
 //Course Sub ITEM END..
 module.exports = {
     ReadpubItems:ReadpubItems,
     ReadItemsByCategory:ReadItemsByCategory,
     UpdateItemsByCategory:UpdateItemsByCategory,
+    ReadItemsByMng:ReadItemsByMng,
+    UpdateItemsByMng:UpdateItemsByMng,
+    read: read,
+    update:update,
+
     createSchema: createSchema,
     readclassact: readclassact,
     ReadClassStudAct:ReadClassStudAct,
@@ -530,7 +587,6 @@ module.exports = {
     ReadActDef:ReadActDef,
     UpdateActDef:UpdateActDef,
     ReadMarksysAuth: ReadMarksysAuth,
-    read: read,
     readclassnostud: readclassnostud,
     ReadActivebyACTCID:ReadActivebyACTCID,
     ReadActLessons:ReadActLessons,

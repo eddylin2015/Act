@@ -1,0 +1,59 @@
+﻿//- attend
+extends ./base.pug
+
+block content
+  mixin isoFmt(d)
+    span= d.toLocaleString()
+  h3 NEWS
+  //a(href="/internal/attend/add", class='btn btn-success btn-sm')
+    i.glyphicon.glyphicon-plus
+    span  Add Attend Rec
+  each book in books
+    .media
+
+      a(href=`/news/item/${book.iid}`)
+        .media-left
+            //img(src=book.imageUrl || "/images/report.jpg")
+        .media-body
+          h4= book.iid
+          h4= book.title
+    if book.pubFlag==1
+      h4 發佈中
+
+    small= book.author
+    small= book.pubDate
+    small= book.category
+    
+    div !{book.description}
+
+  if !books.length
+    p No books found.
+
+  if nextPageToken
+    nav
+      ul.pager
+        li
+          a(href=`?pageToken=${encodeURIComponent(nextPageToken)}`) More
+            
+        
+          
+            
+  if !books.length
+    p No work log found.
+    
+  -var prePageToken = nextPageToken - 50 > 0 ? nextPageToken - 50 : 0
+  if nextPageToken
+    nav
+      ul.pager
+        li
+          a(href=`?pageToken=${encodeURIComponent(prePageToken)}`) Prev
+        li
+          a(href=`?pageToken=${encodeURIComponent(nextPageToken)}`) More
+
+  h5 註解
+  span(class="glyphicon glyphicon-star") Start_Qiz
+  span(class="glyphicon glyphicon-flag") End_Qiz
+  span(class="glyphicon glyphicon-ok") Close_Qiz__OK
+  span(class="glyphicon glyphicon-minus-sign") Close_Qiz_Reject
+  span(class="glyphicon glyphicon-pencil") Qiz_Process
+  
