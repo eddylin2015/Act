@@ -35,7 +35,7 @@ block content
             td= book.category
   script.
     var fn='!{fn}';
-    var PostUrl='/news/itemsUpdate?fn=!{fn}';    
+    var PostUrl='!{myurl}';    
     var returnUrl='/news';
     var CGIExpXlsUrl='/internal/PublicAPI/ExpXls.php?charset=utf-8&filename=mark_!{fn}.xls';
     $('#returnUrlBtn').attr("href", returnUrl);

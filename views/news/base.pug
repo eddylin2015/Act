@@ -5,7 +5,7 @@ html
     meta(charset='utf-8')
     meta(name="viewport", content="width=device-width, initial-scale=1")
     link(rel='stylesheet', href='/stylesheets/bootstrap.min.css')
-    link(rel='stylesheet', href='/stylesheets/main.css')
+    //link(rel='stylesheet', href='/stylesheets/main.css')
     style.
       a {color:white;}
   body
@@ -15,14 +15,17 @@ html
           .navbar-brand 新聞
         ul.nav.navbar-nav
           li
-            a(href="/internal/") 
+            a(href="/") 
               span(class="glyphicon") &#xe021
+          li    
+            a(href='/news') 
+              img(src="/images/RSS.jpg",width="20px;")              
+          li    
+            a(href='/news/xml/news_rss') RSS              
           li
-            a(href="/news/list") 列表              
+            a(href="/news/list") 編輯(列表)              
           li
-            a(href="/news/items") 表格
-          li
-            a(href="/news/sync") sync            
+            a(href="/news/items") 編輯(表格)
           //if act_c_id
             li
               a(href=`/internal/activitycourses/al_list/${act_c_id}?fn=${fn}`) 課表(#{act_c_id})            

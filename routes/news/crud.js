@@ -78,6 +78,7 @@ router.get('/', (req, res, next) => {
         res.render('news/index.pug', {
             profile: req.user,
             books: entity,
+            homeurl:req.headers.host,
         });
     });
 });
@@ -93,6 +94,7 @@ router.get('/list', admin_authRequired, (req, Response, next) => {
             cno: cno,
             books: entity,
             editable: req.query.r,
+            homeurl:req.headers.host,
         });
     });
 });
@@ -103,7 +105,7 @@ router.get('/list', admin_authRequired, (req, Response, next) => {
    * Display a book.
    */
  router.get('/item/:book', (req, res, next) => {
-    if(!req.session.items_category) return Response.end("end.")
+    if(!req.session.items_category) return res.end("end.")
     let cno = 'news';
     let category=req.session.items_category
 
@@ -117,10 +119,21 @@ router.get('/list', admin_authRequired, (req, Response, next) => {
         fn: `${cno}_items`,
         cno: cno,
         book: entity,
+        homeurl:req.headers.host,
       });
     });
   });
-  
+  router.get('/item/plain/:book', (req, res, next) => {
+    let cno = 'news';
+    let category=req.query.category
+    getModel().read(req.params.book,category, (err, entity) => {
+      if (err) {
+        next(err);
+        return;
+      }
+      res.end(JSON.stringify(entity))
+    });
+  });
 /**
  * GET /books/:id/edit
  *
@@ -138,6 +151,7 @@ router.get('/list', admin_authRequired, (req, Response, next) => {
       res.render('news/form.pug', {
         book: entity,
         action: 'Edit',
+        homeurl:req.headers.host,
       });
     });
   });
@@ -176,11 +190,12 @@ router.get('/items', admin_authRequired, (req, Response, next) => {
             cno: cno,
             books: entity,
             editable: req.query.r,
+            homeurl:req.headers.host,
         });
     });
 });
 
-router.post('/itemsUpdate', admin_authRequired, images.multer.single('image'), (req, Response, next) => {
+router.post('/items', admin_authRequired, images.multer.single('image'), (req, Response, next) => {
     let data = JSON.parse(req.body.datajson)
     let category=req.session.items_category
     getModel().UpdateItemsByCategory(data, category, (err, entity) => {
@@ -190,9 +205,12 @@ router.post('/itemsUpdate', admin_authRequired, images.multer.single('image'), (
 });
 router.get('/mng_items', admin_authRequired, (req, Response, next) => {
     if(!req.session.items_category) return Response.end("end.")
+    if(!req.user.id==2) return Response.end("end.")
     let cno = 'news';
-    let category=req.session.items_category
-    getModel().ReadItemsByMng((err, entity) => {
+    let category='其他';
+
+    if( req.query.category) category= req.query.category
+    getModel().ReadItemsByMng(category,(err, entity) => {
         if (err) { next(err); return; }
         Response.render('news/editItems.pug', {
             profile: req.user,
@@ -200,14 +218,18 @@ router.get('/mng_items', admin_authRequired, (req, Response, next) => {
             cno: cno,
             books: entity,
             editable: req.query.r,
+            myurl:req.originalUrl,
+            homeurl:req.headers.host,
         });
     });
 });
 
-router.post('/mng_itemsUpdate', admin_authRequired, images.multer.single('image'), (req, Response, next) => {
+router.post('/mng_items', admin_authRequired, images.multer.single('image'), (req, Response, next) => {
     let data = JSON.parse(req.body.datajson)
-    let category=req.session.items_category
-    getModel().UpdateItemsByMng(data,  (err, entity) => {
+    if(!req.user.id==2) return Response.end("end.")
+    let category='其他';
+    if( req.query.category) category= req.query.category
+    getModel().UpdateItemsByMng(data, category, (err, entity) => {
         if (err) { next(err); return; }
         Response.end(`更新${entity}筆...`);
     });
@@ -222,6 +244,9 @@ router.get('/sync', (req, res, next) => {
     res.end(stdout);
     });
 });
+
+//////end./////
+
 router.post(
     '/sync/item/:book',
     images.multer.single('image'), 
@@ -259,20 +284,44 @@ router.post(
     res.end("end.")
   });
 
-router.get('/xml/news.xml', (req, res, next) => {
-    getModel().ReadItems((err, entity) => {
+router.get('/xml/news_rss', (req, res, next) => {
+    getModel().ReadpubItems((err, entity) => {
         if (err) { next(err); return; }
-        res.render('news/xml/xml_format.pug', {
-            profile: req.user,
+        res.render('news/news_rss.pug', {
             books: entity,
-            al_pass: req.session.al_adm_pass
         });
     });
 });
+router.get('/xml/news_rss.xml', (req, res, next) => {
+    getModel().ReadpubItems((err, entity) => {
+        if (err) { next(err); return; }
+        let xml_content=`<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+        <channel>
+        <atom:link href="https://www.mbc.edu.mo/news/xml/news_rss.xml" rel="self" type="application/rss+xml"/>
+        <title>浸信即時新聞</title>
+        <description>Macau Baptist College</description>
+        <language>zh</language>
+        <link>http://www.mbc.edu.mo</link>
+        `
+        for(let i=0;i<entity.length;i++)
+        {
+            let book=entity[i]
+            xml_content+=`<item>
+            <title>${book.title}</title>
+            <description>${book.description}</description>
+            <category>${book.category}</category>
+            </item>`;
+        }
+        xml_content+="</channel></rss>"
+        res.set('Content-Type', 'text/xml');
+        res.end(xml_content);
+    });
+});
 router.get('/RSS-Feeds', (req, res, next) => {
-    getModel().ReadItems((err, entity) => {
+    getModel().ReadpubItems((err, entity) => {
         if (err) { next(err); return; }
         res.render('news/xml/xml_format.pug', {
+            doctype: 'xml',
             profile: req.user,
             books: entity,
             al_pass: req.session.al_adm_pass
@@ -280,7 +329,7 @@ router.get('/RSS-Feeds', (req, res, next) => {
     });
 });
 router.get('/RSS-Feeds/NewsRelease', (req, res, next) => {
-    getModel().ReadItems((err, entity) => {
+    getModel().ReadpubItems((err, entity) => {
         if (err) { next(err); return; }
         res.render('news/xml/xml_format.pug', {
             profile: req.user,

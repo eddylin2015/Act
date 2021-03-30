@@ -1,0 +1,21 @@
+
+doctype xml
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+<channel>
+<atom:link href="https://www.mbc.edu.mo/news/xml/news_rss.xml" rel="self" type="application/rss+xml"/>
+<title>浸信即時新聞</title>
+<description>Macau Baptist College</description>
+<language>zh</language>
+<link>http://www.mbc.edu.mo</link>
+<copyright>Copyright www.mbc.edu.mo All Rights Reserved</copyright>
+each book in books
+  item
+    title= book.title
+    description= book.description
+    category= book.category
+    pubDate= book.pubDate
+    author= book.author
+    guid= book.guid
+    | <link>!{book.link}</link>
+</channel>
+</rss>

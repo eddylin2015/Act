@@ -1,6 +1,7 @@
 extends ./base.pug
 block content 
   h3 NEWS
+  span  https://www.mbc.edu.mo/news/xml/news_rss.xml
   each book in books
     .media
       //a(href=`/internal/activitycourses/al_list/${book.iid}?fn=${book.titile}`)
