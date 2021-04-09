@@ -1,0 +1,21 @@
+extends ./base.pug
+block content 
+  h3 2021年度活動課列表
+  each book in books
+    if book.SPK==2 & book.activeName != ""
+      .media
+        a(href=`/internal/activitycourses_admin/al_list/${book.act_c_id}?fn=${book.activeName}`)
+          .media-left
+              //img(src=book.imageUrl || "http://placekitten.com/g/128/192")
+          .media-body
+            h4
+              span= book.act_c_id
+              span 	&nbsp;	&nbsp;
+              span= book.activeName
+      a(href=`/internal/activitycourses_admin/as_list/${book.act_c_id}/edit?fn=${book.activeName}`, class='btn btn-success btn-sm')
+        i.glyphicon.glyphicon-plus
+        span  Add STUDENT
+
+
+  if !books.length
+    p No activity course found.

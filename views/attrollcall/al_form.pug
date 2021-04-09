@@ -1,0 +1,27 @@
+﻿extends ./base.pug  
+
+block content
+  script(src='/javascripts/jquery.js')
+  script(src='/javascripts/bootstrap.js')
+  script(src='/jquery-ui-dist/jquery-ui.js')
+  link(rel='stylesheet', href='/jquery-ui-dist/jquery-ui.css')
+  h3 #{action} lesson 
+  form(method="POST", enctype="multipart/form-data")
+    .form-group.hidden
+      label(for="act_c_id") 
+      input.form-control(type="text", name="al_id", id="al_id", value=book.al_id,readonly)      
+
+    .form-group
+      label(for="act_c_id") 活動課代號
+      input.form-control(type="text", name="act_c_id", id="act_c_id", value=book.act_c_id,readonly)      
+    .form-group
+      label(for="fn") 活動課名稱
+      input.form-control(type="text", value=book.fn,readonly)          
+    .form-group
+      label(for="al_datetime") DateTime
+      input.form-control(type="text", name="al_datetime", id="al_datetime", value=book.al_datetime,readonly)             
+    .form-group
+      label(for="Lesson") Lesson
+      input.form-control(type="text", name="lesson", id="lesson", value=book.lesson)             
+
+    button.btn.btn-success(type="submit") Save
