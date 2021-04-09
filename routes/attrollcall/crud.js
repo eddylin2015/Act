@@ -49,7 +49,7 @@ router.use((req, res, next) => {
 router.get('/', (req, res, next) => {
     getModel().ReadActDef((err, entity) => {
         if (err) { next(err); return; }
-        res.render('activitycourses/index.pug', {
+        res.render('attrollcall/index.pug', {
             profile: req.user,
             books: entity,
             al_pass: req.session.al_pass
@@ -62,7 +62,7 @@ router.get('/al_list/:book', authRequired, (req, res, next) => {
     let fn = req.query.fn ? req.query.fn : "";
     getModel().ReadActLessons(act_c_id, (err, entity) => {
         if (err) { next(err); return; }
-        res.render('activitycourses/al_list.pug', {
+        res.render('attrollcall/al_list.pug', {
             act_c_id: act_c_id,
             profile: req.user,
             books: entity,
@@ -79,7 +79,7 @@ router.get('/al_list/:book/add', authRequired, (req, res, next) => {
     let act_c_id = req.params.book;
     let fn = req.query.fn ? req.query.fn : "";
     let al_datetime = fmt_time()
-    res.render('activitycourses/al_form.pug', {
+    res.render('attrollcall/al_form.pug', {
         profile: req.user,
         book: {
             al_id: 0,
@@ -111,7 +111,7 @@ router.get('/al_list/:book/view/:alid', authRequired, (req, res, next) => {
     let fn = req.query.fn ? req.query.fn : "";
     getModel().ReadActLessonStud(alid, (err, entity) => {
         if (err) { next(err); return; }
-        res.render('activitycourses/aa_view.pug', {
+        res.render('attrollcall/aa_view.pug', {
             act_c_id: act_c_id,
             al_id: alid,
             profile: req.user,
@@ -127,7 +127,7 @@ router.get('/al_list/:book/edit/:alid', authRequired, (req, res, next) => {
     let fn = req.query.fn ? req.query.fn : "";
     getModel().ReadActLessonStud(alid, (err, entity) => {
         if (err) { next(err); return; }
-        res.render('activitycourses/aa_form.pug', {
+        res.render('attrollcall/aa_form.pug', {
             act_c_id: act_c_id,
             al_id: alid,
             profile: req.user,
@@ -143,7 +143,7 @@ router.post('/al_list/:book/edit/:alid', images.multer.single('image'), authRequ
     let data=req.body
     getModel().UpdateActLessonStud(data,alid, (err, entity) => {
         if (err) { next(err); return; }
-        res.render('activitycourses/aa_view.pug', {
+        res.render('attrollcall/aa_view.pug', {
             act_c_id: act_c_id,
             al_id: alid,
             profile: req.user,
@@ -156,7 +156,7 @@ router.post('/al_list/:book/edit/:alid', images.multer.single('image'), authRequ
 router.get('/al_login/:book', (req, res, next) => {
     let act_c_id = req.params.book;
     let act = req.query.fn;
-    res.render('activitycourses/al_login.pug', {
+    res.render('attrollcall/al_login.pug', {
         profile: req.user,
         act_c_id: act_c_id,
         act: act
@@ -171,9 +171,9 @@ router.post('/al_login/:book', images.multer.single('image'), (req, res, next) =
         if (err) { next(err); return; }
         if (req.body.password == entity[0].pwd) {
             req.session.al_pass = act_c_id
-            return res.redirect(`/internal/activitycourses/al_list/${act_c_id}?fn=${encodeURI(fn)}`);
+            return res.redirect(`/internal/attrollcall/al_list/${act_c_id}?fn=${encodeURI(fn)}`);
         }else{
-            return res.redirect(`/internal/activitycourses/al_login/${act_c_id}?fn=${encodeURI(fn)}`);
+            return res.redirect(`/internal/attrollcall/al_login/${act_c_id}?fn=${encodeURI(fn)}`);
         }
     });
 
@@ -182,7 +182,7 @@ router.post('/al_login/:book', images.multer.single('image'), (req, res, next) =
 
 router.get('/al_logout', (req, res, next) => {
     req.session.al_pass = null;
-    return res.redirect(`/internal/activitycourses`);
+    return res.redirect(`/internal/attrollcall`);
 });
 
 //for act mng

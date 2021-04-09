@@ -81,5 +81,7 @@ childproc/m*.*
 childproc/parse*.*
 tools/tbl2.js
 config.js
+public/css/
+public/js/
 
 
