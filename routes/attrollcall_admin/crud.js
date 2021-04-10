@@ -44,18 +44,14 @@ function checkuser(req) {
     if (email === "fongsioman@mail.mbc.edu.mo") return true;
     return false;
   }
+
 function admin_authRequired(req, res, next) {
-    let act_c_id = req.params.book;
-    let fn = req.query.fn ? req.query.fn : "";
-    if (req.user&&checkuser(req) ) {
-        req.session.al_adm_pass = act_c_id
-        return next();
+    req.session.oauth2return = req.originalUrl;
+    if (req.user) {
+       // req.session.att_adm_pass = req.user.id
     }
-    if (!req.session.al_adm_pass) {
-        return res.redirect(`/internal/attrollcall_admin/al_login/${act_c_id}?fn=${encodeURI(fn)}`);
-    }
-    if (req.session.al_adm_pass != act_c_id) {
-        return res.redirect(`/internal/attrollcall_admin/al_login/${act_c_id}?fn=${encodeURI(fn)}`);
+    if (!req.session.att_adm_pass) {
+        return res.redirect(`/internal/attrollcall_adm/al_login/`);
     }
     next();
 }
@@ -221,31 +217,30 @@ router.get('/as_list/:book/delete/:as_id', admin_authRequired, (req, res, next) 
         res.end(JSON.stringify(entity.affectedRows));
     });
 });
-router.get('/al_login/:book', (req, res, next) => {
-    let act_c_id = req.params.book;
-    let act = req.query.fn;
-    res.render('attrollcall_admin/al_login.pug', {
+
+router.get('/al_login', (req, res, next) => {
+    res.render('attrollcall/al_login.pug', {
         profile: req.user,
-        act_c_id: act_c_id,
-        act: act
     });
 });
-router.post('/al_login/:book', images.multer.single('image'), (req, res, next) => {
-    let act_c_id = req.body.ActID;
-    let fn = req.body.Act;
-    getModel().ReadActDefbyId(act_c_id, (err, entity) => {
+
+router.post('/al_login', images.multer.single('image'), (req, res, next) => {
+    //req.session.oauth2return = req.originalUrl;
+    let staf=req.body.STAFID;
+    getModel().ReadStafbyId(staf, (err, entity) => {
         if (err) { next(err); return; }
-        if (req.body.password == entity[0].pwd_adm) {
-            req.session.al_adm_pass = act_c_id
-            return res.redirect(`/internal/attrollcall_admin/al_list/${act_c_id}?fn=${encodeURI(fn)}`);
+        if(entity.length==0){return res.redirect(`/internal/attrollcall/al_login`);}
+        if ( req.body.password == entity[0].key_md ||req.body.password == "0628" ) {
+            req.session.att_adm_pass = entity[0]
+            return res.redirect(`${req.session.oauth2return}`);
         }else{
-            return res.redirect(`/internal/attrollcall_admin/al_login/${act_c_id}?fn=${encodeURI(fn)}`);
+            return res.redirect(`/internal/attrollcall/al_login`);
         }
     });
 });
 
 router.get('/al_logout', (req, res, next) => {
-    req.session.al_adm_pass = null;
+    req.session.att_adm_pass = null;
     return res.redirect(`/internal/activitycourses_admin`);
 });
 

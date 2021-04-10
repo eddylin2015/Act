@@ -13,11 +13,10 @@ html
   body
     .container
       form(class="form-signin",  method="post")
+        h2(class="form-signin-heading") 點名登記
         h2(class="form-signin-heading") Please sign in
-        label(for="inputActID", class="sr-only") Activity ID
-        input(type="text" ,id="inputActID", class="form-control", name="ActID", placeholder="ActID", value=act_c_id, required, autofocus)
-        label(for="inputEmail", class="sr-only") Activity Name
-        input(type="text" ,id="inputAct", class="form-control", name="Act", placeholder="Act", value=act, required, autofocus)
+        label(for="inputActID", class="sr-only") Staf ID
+        input(type="text" ,id="inputActID", class="form-control", name="STAFID", placeholder="STAF ID", value=act_c_id, required, autofocus)
         label(for="inputPassword", class="sr-only") Password
-        input(type="password", id="inputPassword", class="form-control", name="password", placeholder="Password", value=ppwd, required)
+        input(type="password", id="inputPassword", class="form-control", name="password", placeholder="MMDD", value=ppwd, required)
         button(class="btn btn-lg btn-primary btn-block", type="submit") Sign in

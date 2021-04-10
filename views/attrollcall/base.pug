@@ -6,6 +6,7 @@ html
     meta(name="viewport", content="width=device-width, initial-scale=1")
     link(rel='stylesheet', href='/stylesheets/bootstrap.min.css')
     link(rel='stylesheet', href='/stylesheets/main.css')
+    script(src='/javascripts/jquery.js')    
     style.
       a {color:white;}
   body
@@ -19,9 +20,14 @@ html
               span(class="glyphicon") &#xe021
           li
             a(href="/internal/attrollcall") 項目列表
+          if att_pass  
+            li
+              a(href="/internal/attrollcall/myrollcall") 職員登記
+                      
           if act_c_id
             li
               a(href=`/internal/attrollcall/al_list/${act_c_id}?fn=${fn}`) 項目(#{act_c_id})            
+
           //li
             a(href="/internal/markup/act/actlist") 活動列表
           //li
@@ -30,8 +36,8 @@ html
             a(href="/internal/markup/act/cnolist?cno=S") 中學活動分
 
         p.navbar-text.navbar-right
-          if al_pass
-            a(href="/internal/activitycourses/al_logout",style="color:green") (exit)#{al_pass}            
+          if att_pass
+            a(href="/internal/attrollcall/al_logout",style="color:green") (exit)#{att_pass.stud_ref}            
           if profile
             if profile.image
               img.img-circle(src=profile.image, width=24)

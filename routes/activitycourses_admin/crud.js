@@ -47,6 +47,7 @@ function checkuser(req) {
 function admin_authRequired(req, res, next) {
     let act_c_id = req.params.book;
     let fn = req.query.fn ? req.query.fn : "";
+    req.session.oauth2return = req.originalUrl;
     if (req.user&&checkuser(req) ) {
         req.session.al_adm_pass = act_c_id
         return next();
@@ -233,11 +234,12 @@ router.get('/al_login/:book', (req, res, next) => {
 router.post('/al_login/:book', images.multer.single('image'), (req, res, next) => {
     let act_c_id = req.body.ActID;
     let fn = req.body.Act;
+    
     getModel().ReadActDefbyId(act_c_id, (err, entity) => {
         if (err) { next(err); return; }
         if (req.body.password == entity[0].pwd_adm) {
             req.session.al_adm_pass = act_c_id
-            return res.redirect(`/internal/activitycourses_admin/al_list/${act_c_id}?fn=${encodeURI(fn)}`);
+            return res.redirect(`${req.session.oauth2return}`);
         }else{
             return res.redirect(`/internal/activitycourses_admin/al_login/${act_c_id}?fn=${encodeURI(fn)}`);
         }

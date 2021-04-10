@@ -46,12 +46,16 @@ CREATE TABLE IF NOT EXISTS `act`.`attrollcall_stud` (
   KEY `askey` (`act_c_id`,`stud_ref`)
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
-CREATE TABLE IF NOT EXISTS `act`.`studinfo` (
-  `stud_ref` varchar(11) NOT NULL,
-  `dsej_ref` varchar(11) DEFAULT NULL,
-  `c_name` varchar(45) DEFAULT NULL,
-  `curr_class` varchar(45) DEFAULT NULL,
-  `curr_seat` int DEFAULT NULL,
+CREATE TABLE `studinfo` (
+  `stud_ref` varchar(11) COLLATE utf8mb4_bin NOT NULL,
+  `dsej_ref` varchar(11) COLLATE utf8mb4_bin DEFAULT NULL,
+  `c_name` varchar(45) COLLATE utf8mb4_bin DEFAULT NULL,
+  `curr_class` varchar(45) COLLATE utf8mb4_bin DEFAULT NULL,
+  `curr_seat` int(11) DEFAULT NULL,
+  `key_md` varchar(4) COLLATE utf8mb4_bin DEFAULT NULL,
+  `classmaster` int(1) DEFAULT NULL,
   PRIMARY KEY (`stud_ref`),
   KEY `cno_seat` (`curr_class`,`curr_seat`)
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+ALTER TABLE `act`.`studinfo` ADD COLUMN `key_md` VARCHAR(4) NULL AFTER `curr_seat`;
+ALTER TABLE `act`.`studinfo` ADD COLUMN `classmaster` int(4) NULL AFTER `key_md`;

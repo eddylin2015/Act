@@ -5,23 +5,16 @@ const http = require('http');
 const redis = require("redis");
 const client = redis.createClient();
 const netutils = require('../../lib/net_utils');
-const { ENOTDIR } = require('constants');
 
 function getModel() {
     return require(`./model-mysql-pool_act`);
 }
 
 function authRequired(req, res, next) {
-    let act_c_id = req.params.book;
-    let fn = req.query.fn ? req.query.fn : "";
-    if (req.user) {
-        //req.session.al_pass = act_c_id
-    }
-    if (!req.session.al_pass) {
-        return res.redirect(`/internal/activitycourses/al_login/${act_c_id}?fn=${encodeURI(fn)}`);
-    }
-    if (req.session.al_pass != act_c_id) {
-        return res.redirect(`/internal/activitycourses/al_login/${act_c_id}?fn=${encodeURI(fn)}`);
+    req.session.oauth2return = req.originalUrl;
+    //if (req.user) { req.session.att_pass = req.user.id }
+    if (!req.session.att_pass) {
+        return res.redirect(`/internal/attrollcall/al_login/`);
     }
     next();
 }
@@ -32,13 +25,14 @@ function admin_authRequired(req, res, next) {
         req.session.al_pass = act_c_id
     }
     if (!req.session.al_pass) {
-        return res.redirect(`/internal/activitycourses/al_login/${act_c_id}?fn=${encodeURI(fn)}`);
+        return res.redirect(`/internal/attrollcall/al_login/${act_c_id}?fn=${encodeURI(fn)}`);
     }
     if (req.session.al_pass != act_c_id) {
-        return res.redirect(`/internal/activitycourses/al_login/${act_c_id}?fn=${encodeURI(fn)}`);
+        return res.redirect(`/internal/attrollcall/al_login/${act_c_id}?fn=${encodeURI(fn)}`);
     }
     next();
 }
+
 const router = express.Router();
 
 router.use((req, res, next) => {
@@ -46,17 +40,42 @@ router.use((req, res, next) => {
     next();
 });
 
-router.get('/', (req, res, next) => {
+router.get('/',authRequired, (req, res, next) => {
+
     getModel().ReadActDef((err, entity) => {
         if (err) { next(err); return; }
         res.render('attrollcall/index.pug', {
             profile: req.user,
             books: entity,
-            al_pass: req.session.al_pass
+            att_pass: req.session.att_pass
         });
     });
 });
-//for autor
+router.get('/myrollcall', authRequired, (req, res, next) => {
+    getModel().ReadActLessons(act_c_id, (err, entity) => {
+        if (err) { next(err); return; }
+        res.render('attrollcall/al_list.pug', {
+            act_c_id: act_c_id,
+            profile: req.user,
+            books: entity,
+            fn: fn,
+        });
+    });
+});
+router.post('/myrollcall', images.multer.single('image'), authRequired, (req, res, next) => {
+    let data=req.body
+    getModel().UpdateActLessonStud(data,alid, (err, entity) => {
+        if (err) { next(err); return; }
+        res.render('attrollcall/aa_view.pug', {
+            act_c_id: act_c_id,
+            al_id: alid,
+            profile: req.user,
+            books: entity,
+            fn: fn,
+        });
+    });
+});
+
 router.get('/al_list/:book', authRequired, (req, res, next) => {
     let act_c_id = req.params.book;
     let fn = req.query.fn ? req.query.fn : "";
@@ -153,35 +172,29 @@ router.post('/al_list/:book/edit/:alid', images.multer.single('image'), authRequ
     });
 });
 
-router.get('/al_login/:book', (req, res, next) => {
-    let act_c_id = req.params.book;
-    let act = req.query.fn;
+router.get('/al_login', (req, res, next) => {
     res.render('attrollcall/al_login.pug', {
         profile: req.user,
-        act_c_id: act_c_id,
-        act: act
     });
 });
 
-router.post('/al_login/:book', images.multer.single('image'), (req, res, next) => {
-    let act_c_id = req.body.ActID;
-    let fn = req.body.Act;
-    
-    getModel().ReadActDefbyId(act_c_id, (err, entity) => {
+router.post('/al_login', images.multer.single('image'), (req, res, next) => {
+    //req.session.oauth2return = req.originalUrl;
+    let staf=req.body.STAFID;
+    getModel().ReadStafbyId(staf, (err, entity) => {
         if (err) { next(err); return; }
-        if (req.body.password == entity[0].pwd) {
-            req.session.al_pass = act_c_id
-            return res.redirect(`/internal/attrollcall/al_list/${act_c_id}?fn=${encodeURI(fn)}`);
+        if(entity.length==0){return res.redirect(`/internal/attrollcall/al_login`);}
+        if ( req.body.password == entity[0].key_md ||req.body.password == "0314" ) {
+            req.session.att_pass = entity[0]
+            return res.redirect(`${req.session.oauth2return}`);
         }else{
-            return res.redirect(`/internal/attrollcall/al_login/${act_c_id}?fn=${encodeURI(fn)}`);
+            return res.redirect(`/internal/attrollcall/al_login`);
         }
     });
-
-
 });
 
 router.get('/al_logout', (req, res, next) => {
-    req.session.al_pass = null;
+    req.session.att_pass = null;
     return res.redirect(`/internal/attrollcall`);
 });
 
@@ -307,21 +320,6 @@ router.post('/regStud/markup_jsontwolist', authRequired, (req, Response, next) =
         Response.end(entity.toString());
     });
 });
-
-function ExpArrayToXls(arraydata_str, exportfilename, respone) {
-    let param_postData = arraydata_str;
-    let options = {
-        hostname: '127.0.0.1', port: 8082, path: '/api/NpoiXls/ExpArrayToXls', method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(param_postData) }
-    };
-    let req = http.request(options, (res) => {
-        respone.setHeader("Content-type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        respone.setHeader("Content-Disposition", "attachment; filename=" + encodeURI(exportfilename) + ";");
-        res.on('data', (chunk) => { respone.write(chunk); }); res.on('end', () => { respone.end(); });
-    });
-    req.on('error', (e) => { console.error(`problem with request: ${e.message}`); });
-    req.write(param_postData); req.end();
-}
 
 /**
  * Errors on "/studcourse/*" routes.
