@@ -1,0 +1,104 @@
+﻿extends ./base.pug  
+
+block content
+  script(src='/javascripts/jquery.js')
+  script(src='/javascripts/bootstrap.js')
+  script(src='/jquery-ui-dist/jquery-ui.js')
+  link(rel='stylesheet', href='/jquery-ui-dist/jquery-ui.css')
+  script.
+    function delrec(x,as_id){
+      console.log(x)
+      ///as_list/:book/delete/:as_id
+      url=`/internal/activitycourses_admin/aas_list/#{act_c_id}/delete/${as_id}`
+      $.get( url, function( data ) {
+       // alert( JSON.stringify(data) );
+      });
+       x.parentElement.parentElement.style.display="none"
+       //x.text="已經刪除"
+       //document.getElementById("demo")
+       
+    }
+    function fsubmit(x){
+      let ori_list=[]
+      var table = document.getElementById("table1");
+      for (var i = 1, row; row = table.rows[i]; i++) {
+         //for (var j = 0, col; col = row.cells[j]; j++) {     }
+         ori_list.push(`${row.cells[1].innerHTML}${row.cells[2].innerHTML}`)
+      }      
+      console.log(ori_list)
+      let re = RegExp(/S[CG][1-3][A-E][0-9]+/, 'i');;
+      let stud_list=[]
+      let aa=document.getElementById("STUDLIST").value.split('\n');
+      console.log(aa)
+      for(aa_ of aa ){
+        aaa_=aa_.split(";")
+        console.log(aaa_)
+      for(bb_ of aaa_) {
+        bb_=bb_.toUpperCase().trim().replace(/\W+/g,"");
+        console.log(bb_)
+        var res = re.exec(bb_);
+        console.log(res)
+        if(res){
+          for(res_ of res){
+            console.log(ori_list.indexOf(res_))
+            if(ori_list.indexOf(res_)<0)
+               stud_list.push(res_)
+          }
+        }
+      }
+      }
+      console.log("xxxxx")
+      document.getElementById("STUDLIST").value=JSON.stringify(stud_list)
+      document.forms["formid"].submit();
+      //`/internal/activitycourses_admin/al_list/${act_c_id}/add?fn=${fn}`
+    }    
+  h3 #{action} #{fn} 
+  table#table1
+    tr 
+      th as_id
+      th classno
+      th seat 
+      th c_name
+      td action
+    each book in books
+      tr
+        td= book.as_id
+        td= book.classno
+        td= book.seat
+        td= book.c_name
+        td
+          a(href='#',onclick=`delrec(this,${book.as_id});`, class='btn btn-danger btn-sm')
+            i.glyphicon.glyphicon-minus Del
+    span  Add lesson
+  h3 新增學生
+  form(method="POST", enctype="multipart/form-data")#formid
+    .form-group
+      label(for="act_c_id") 活動課代號
+      input.form-control(type="text", name="act_c_id", id="act_c_id", value=act_c_id,readonly)   
+    .form-group     
+      label(for="activeName") 活動課名稱
+      input.form-control(type="text", name="activeName", id="activeName", value=fn,readonly)      
+    .form-group
+      label(for="TextArea") eg: SG1C1
+      textarea.form-control(rows=4,wrap="off",name="STUDLIST", id="STUDLIST", style='overflow-x: hidden; margin:0;padding:0;color: white;background-color:black;')
+    button.btn.btn-success(type="button",onclick="fsubmit(this)") Insert StudList
+        
+  //form(method="POST", enctype="multipart/form-data")
+    .form-group.hidden
+      label(for="act_c_id") 
+      input.form-control(type="text", name="al_id", id="al_id", value=book.al_id,readonly)      
+
+    .form-group
+      label(for="act_c_id") 活動課代號
+      input.form-control(type="text", name="act_c_id", id="act_c_id", value=book.act_c_id,readonly)      
+    .form-group
+      label(for="fn") 活動課名稱
+      input.form-control(type="text", value=book.fn,readonly)          
+    .form-group
+      label(for="al_datetime") DateTime
+      input.form-control(type="text", name="al_datetime", id="al_datetime", value=book.al_datetime,readonly)             
+    .form-group
+      label(for="Lesson") Lesson
+      input.form-control(type="text", name="lesson", id="lesson", value=book.lesson)             
+
+    button.btn.btn-success(type="submit") Save

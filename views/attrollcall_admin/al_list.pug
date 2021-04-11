@@ -4,19 +4,25 @@ block content
   a(href=`/internal/attrollcall_admin/al_list/${act_c_id}/add?fn=${fn}`, class='btn btn-success btn-sm')
     i.glyphicon.glyphicon-plus
     span  Add lesson
-
-  for book in books
-    .media
-      a(href=`/internal/attrollcall_admin/al_list/${act_c_id}/view/${book.al_id}?fn=${book.lesson}`)
-        .media-left
-            //img(src=book.imageUrl || "http://placekitten.com/g/128/192")
-        .media-body
-          h4
-            span= book.al_id
-            span 	&nbsp;	&nbsp;
-            span= book.al_datetime
-            span 	&nbsp;	&nbsp;
-            span= book.lesson
+  table
+    for book in books
+      tr 
+        td
+          .media
+            a(href=`/internal/attrollcall_admin/al_list/${act_c_id}/view/${book.al_id}?fn=${book.lesson}`)
+              .media-left
+                  //img(src=book.imageUrl || "http://placekitten.com/g/128/192")
+              .media-body
+                h4
+                  span= book.al_id
+                  span 	&nbsp;	&nbsp;
+                  span= book.al_datetime
+                  span 	&nbsp;	&nbsp;
+                  span= book.lesson
+        td          
+          a(href=`/internal/attrollcall_admin/aas_list/${book.act_c_id}/edit?fn=${book.activeName}`, class='btn btn-success btn-sm')
+            i.glyphicon.glyphicon-plus
+            span  Add STUDENT      
       
   if !books.length
     p No activity course found.

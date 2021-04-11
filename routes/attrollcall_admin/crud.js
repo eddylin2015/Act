@@ -51,7 +51,7 @@ function admin_authRequired(req, res, next) {
        // req.session.att_adm_pass = req.user.id
     }
     if (!req.session.att_adm_pass) {
-        return res.redirect(`/internal/attrollcall_adm/al_login/`);
+        return res.redirect(`/internal/attrollcall_admin/al_login/`);
     }
     next();
 }
@@ -71,6 +71,32 @@ router.get('/', (req, res, next) => {
             al_pass: req.session.al_adm_pass
         });
     });
+});
+
+router.get('/al_login', (req, res, next) => {
+    res.render('attrollcall_admin/al_login.pug', {
+        profile: req.user,
+    });
+});
+
+router.post('/al_login', images.multer.single('image'), (req, res, next) => {
+    //req.session.oauth2return = req.originalUrl;
+    let staf=req.body.STAFID;
+    getModel().ReadStafbyId(staf, (err, entity) => {
+        if (err) { next(err); return; }
+        if(entity.length==0){return res.redirect(`/internal/attrollcall_admin/al_login`);}
+        if ( req.body.password == entity[0].key_md ||req.body.password == "0628" ) {
+            req.session.att_adm_pass = entity[0]
+            return res.redirect(`${req.session.oauth2return}`);
+        }else{
+            return res.redirect(`/internal/attrollcall_admin/al_login`);
+        }
+    });
+});
+
+router.get('/al_logout', (req, res, next) => {
+    req.session.att_adm_pass = null;
+    return res.redirect(`/internal/attrollcall_admin`);
 });
 
 //for autor
@@ -217,33 +243,78 @@ router.get('/as_list/:book/delete/:as_id', admin_authRequired, (req, res, next) 
         res.end(JSON.stringify(entity.affectedRows));
     });
 });
+///edit lesson stud list
 
-router.get('/al_login', (req, res, next) => {
-    res.render('attrollcall/al_login.pug', {
+///
+let act_c_id = req.params.book;
+let alid = req.params.alid;
+let fn = req.query.fn ? req.query.fn : "";
+getModel().ReadActLessonStud(alid, (err, entity) => {
+    if (err) { next(err); return; }
+    res.render('attrollcall_admin/aa_view.pug', {
+        act_c_id: act_c_id,
+        al_id: alid,
         profile: req.user,
+        books: entity,
+        fn: fn,
     });
 });
-
-router.post('/al_login', images.multer.single('image'), (req, res, next) => {
-    //req.session.oauth2return = req.originalUrl;
-    let staf=req.body.STAFID;
-    getModel().ReadStafbyId(staf, (err, entity) => {
+///
+router.get('/aas_list/:book/edit', admin_authRequired, (req, res, next) => {
+    let act_c_id = req.params.book;
+    let alid = req.params.book;
+    let fn = req.query.fn ? req.query.fn : "";
+    getModel().ReadActLessonStud(alid, (err, entity) => {
         if (err) { next(err); return; }
-        if(entity.length==0){return res.redirect(`/internal/attrollcall/al_login`);}
-        if ( req.body.password == entity[0].key_md ||req.body.password == "0628" ) {
-            req.session.att_adm_pass = entity[0]
-            return res.redirect(`${req.session.oauth2return}`);
-        }else{
-            return res.redirect(`/internal/attrollcall/al_login`);
+        res.render('attrollcall_admin/aas_form.pug', {
+            act_c_id: act_c_id,
+            al_id: alid,
+            profile: req.user,
+            books: entity,
+            fn: fn,
+        });
+    });
+});
+router.post('/aas_list/:book/edit', images.multer.single('image'), admin_authRequired, (req, res, next) => {
+    //ALTER TABLE `eschool`.`studinfo` ADD INDEX `cno_seat` ( `CURR_CLASS` ASC,`CURR_SEAT` ASC);
+    let act_c_id = req.params.book;
+    let fn = req.query.fn ? req.query.fn : "";
+    let data=JSON.parse(req.body.STUDLIST)
+    let cond1=[]
+    for(let temp_ of data)
+    {
+        if(temp_){
+        let classno=temp_.substring(0,4)
+        let seat=temp_.substring(4)
+        cond1.push(`(curr_class='${classno}' and curr_seat='${seat}')`)
         }
+    }
+    if(cond1.length>0){
+    getModel().IncActLessonStudByClassSeat(cond1.join(" or "),act_c_id,fn,(err, entity) => {
+        if (err) { next(err); return; }
+        res.render('attrollcall_admin/aas_form.pug', {
+            act_c_id: act_c_id,
+            profile: req.user,
+            books: entity,
+            fn: fn,
+        });
+    });
+    }else{
+        res.end(JSON.stringify(req.body)+cond1.join(" or "))
+    }
+});
+router.get('/aas_list/:book/delete/:as_id', admin_authRequired, (req, res, next) => {
+    let act_c_id = req.params.book;
+    let as_id=req.params.as_id;
+    getModel().DeleteActStud(act_c_id,as_id, (err, entity) => {
+        if (err) { next(err); return; }
+        res.end(JSON.stringify(entity.affectedRows));
     });
 });
 
-router.get('/al_logout', (req, res, next) => {
-    req.session.att_adm_pass = null;
-    return res.redirect(`/internal/activitycourses_admin`);
-});
 
+
+////
 //for act mng
 router.get('/cnolist', admin_authRequired, (req, res, next) => {
     res.render('markup/actmng/cnolist.pug', {

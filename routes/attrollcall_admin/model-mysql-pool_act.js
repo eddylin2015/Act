@@ -8,7 +8,20 @@ const options = {
     database: config.get('ACTMYSQL_DATABASE')
 };
 const pool = mysql.createPool(options);
-
+function ReadStafbyId(STAFID,cb) {
+    pool.getConnection(function (err, connection) {
+        if (err) {
+            cb(err);
+            return;
+        }
+        connection.query(
+            'SELECT * FROM `studinfo` WHERE stud_ref=?;', [STAFID], (err, results) => {
+                if (err) { cb(err); return; }
+                cb(null, results);
+                connection.release();
+            });
+    });
+}
 function ReadActDefbyId(act_c_id, cb) {
     pool.getConnection(function (err, connection) {
         if (err) {
@@ -209,6 +222,34 @@ function ReadActLessonStud(al_id, cb) {
             });
     });
 }
+async function IncActLessonStudByClassSeat(ByClassSeat, act_c_id, al_id,fn, cb) {
+    pool.getConnection(async function (err, connection) {
+        if (err) {
+            cb(err);
+            return;
+        }
+        connection.query(
+            `SELECT stud_ref,curr_class as classno,curr_seat as seat,c_name FROM studinfo where ${ByClassSeat} order by curr_class,curr_seat`, [], async function (err, results) {
+                if (err) { cb(err); return; }
+                let cnt = 0;
+                for (let row of results) {
+                    row["aa_id"] = 0
+                    row["al_id"] = 0
+                    row["act_c_id"] = act_c_id
+                    row["activeName"] = fn
+                    cnt += await new Promise((resolve, reject) => {
+                        connection.query(`insert  attrollcall_attend set  ?`, [row], (err, res) => {
+                            if (err) { console.log(err); reject(err); }
+                            resolve(100);
+                        });
+                    });
+
+                }
+                ReadActStud(act_c_id, cb)
+                connection.release();
+            });
+    });
+}
 async function UpdateActLessonStud(data, al_id, cb) {
     pool.getConnection(async function (err, connection) {
         if (err) { cb(err); return; }
@@ -250,6 +291,7 @@ function readclassnostud(id, cb) {
 
 module.exports = {
     createSchema: createSchema,
+    ReadStafbyId:ReadStafbyId,
     ReadActDefbyId: ReadActDefbyId,
     ReadActDef: ReadActDef,
     UpdateActDef: UpdateActDef,
@@ -258,6 +300,7 @@ module.exports = {
     CreateActLesson: CreateActLesson,
     CloneActLessonStudList: CloneActLessonStudList,
     ReadActLessonStud: ReadActLessonStud,
+    IncActLessonStudByClassSeat:IncActLessonStudByClassSeat,
     UpdateActLessonStud: UpdateActLessonStud,
     ReadActStud: ReadActStud,
     UpdateActStud: UpdateActStud,
