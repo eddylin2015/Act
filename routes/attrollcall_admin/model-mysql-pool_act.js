@@ -234,9 +234,9 @@ async function IncActLessonStudByClassSeat(ByClassSeat, act_c_id, al_id,fn, cb) 
                 let cnt = 0;
                 for (let row of results) {
                     row["aa_id"] = 0
-                    row["al_id"] = 0
+                    row["al_id"] = al_id
                     row["act_c_id"] = act_c_id
-                    row["activeName"] = fn
+                    //row["activeName"] = fn
                     cnt += await new Promise((resolve, reject) => {
                         connection.query(`insert  attrollcall_attend set  ?`, [row], (err, res) => {
                             if (err) { console.log(err); reject(err); }
@@ -245,11 +245,26 @@ async function IncActLessonStudByClassSeat(ByClassSeat, act_c_id, al_id,fn, cb) 
                     });
 
                 }
-                ReadActStud(act_c_id, cb)
+                ReadActLessonStud(al_id, cb)
                 connection.release();
             });
     });
 }
+function DeleteActLessonStud(act_c_id,al_id,aa_id, cb) {
+    pool.getConnection(function (err, connection) {
+        if (err) {
+            cb(err);
+            return;
+        }
+        connection.query(
+            'Delete FROM `attrollcall_attend` where act_c_id=? and al_id=? and aa_id=?', [act_c_id,al_id,aa_id], (err, results) => {
+                if (err) { cb(err); return; }
+                cb(null, results);
+                connection.release();
+            });
+    });
+}
+
 async function UpdateActLessonStud(data, al_id, cb) {
     pool.getConnection(async function (err, connection) {
         if (err) { cb(err); return; }
@@ -301,6 +316,7 @@ module.exports = {
     CloneActLessonStudList: CloneActLessonStudList,
     ReadActLessonStud: ReadActLessonStud,
     IncActLessonStudByClassSeat:IncActLessonStudByClassSeat,
+    DeleteActLessonStud:DeleteActLessonStud,
     UpdateActLessonStud: UpdateActLessonStud,
     ReadActStud: ReadActStud,
     UpdateActStud: UpdateActStud,

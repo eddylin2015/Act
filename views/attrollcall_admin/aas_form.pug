@@ -9,7 +9,7 @@ block content
     function delrec(x,as_id){
       console.log(x)
       ///as_list/:book/delete/:as_id
-      url=`/internal/activitycourses_admin/aas_list/#{act_c_id}/delete/${as_id}`
+      url=`/internal/activitycourses_admin/aas_list/#{act_c_id}/#{al_id}/delete/${as_id}`
       $.get( url, function( data ) {
        // alert( JSON.stringify(data) );
       });
@@ -25,29 +25,38 @@ block content
          //for (var j = 0, col; col = row.cells[j]; j++) {     }
          ori_list.push(`${row.cells[1].innerHTML}${row.cells[2].innerHTML}`)
       }      
-      console.log(ori_list)
       let re = RegExp(/S[CG][1-3][A-E][0-9]+/, 'i');;
+      let re1 = RegExp(/P[1-6][A-E][0-9]+/, 'i');;
+      let re2 = RegExp(/I[1-6][A-E][0-9]+/, 'i');;
+      let re3 = RegExp(/^[0-9]{7}$/, 'i');;
       let stud_list=[]
       let aa=document.getElementById("STUDLIST").value.split('\n');
-      console.log(aa)
+      let append_arr=[]
+      for(aa_ of aa ){
+        console.log(aa_.endsWith("*"))
+         if(aa_.endsWith("*")) {
+           let aa__=aa_.replace("*","")
+           for(let i=1;i<40;i++){
+             append_arr.push(aa__+i);
+           }
+         }
+      }
+      aa =aa.concat(append_arr)
       for(aa_ of aa ){
         aaa_=aa_.split(";")
-        console.log(aaa_)
-      for(bb_ of aaa_) {
-        bb_=bb_.toUpperCase().trim().replace(/\W+/g,"");
-        console.log(bb_)
-        var res = re.exec(bb_);
-        console.log(res)
-        if(res){
-          for(res_ of res){
-            console.log(ori_list.indexOf(res_))
-            if(ori_list.indexOf(res_)<0)
-               stud_list.push(res_)
-          }
+        for(bb_ of aaa_) {
+          bb_=bb_.toUpperCase().trim().replace(/\W+/g,"");
+          var res = re.exec(bb_);
+          if(res){ for(res_ of res){ if(ori_list.indexOf(res_)<0) stud_list.push(res_) }   }
+          res = re1.exec(bb_);
+          if(res){ for(res_ of res){ if(ori_list.indexOf(res_)<0) stud_list.push(res_) }   }
+          res = re2.exec(bb_);
+          if(res){ for(res_ of res){ if(ori_list.indexOf(res_)<0) stud_list.push(res_) }   }
+          res = re3.exec(bb_);
+          if(res){ for(res_ of res){ if(ori_list.indexOf(res_)<0) stud_list.push(res_) }   }
+
         }
       }
-      }
-      console.log("xxxxx")
       document.getElementById("STUDLIST").value=JSON.stringify(stud_list)
       document.forms["formid"].submit();
       //`/internal/activitycourses_admin/al_list/${act_c_id}/add?fn=${fn}`
@@ -62,7 +71,9 @@ block content
       td action
     each book in books
       tr
-        td= book.as_id
+        td= book.aa_id
+        td= book.al_id
+        td= book.act_c_id
         td= book.classno
         td= book.seat
         td= book.c_name

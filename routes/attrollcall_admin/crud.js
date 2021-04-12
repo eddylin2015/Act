@@ -244,25 +244,9 @@ router.get('/as_list/:book/delete/:as_id', admin_authRequired, (req, res, next) 
     });
 });
 ///edit lesson stud list
-
-///
-let act_c_id = req.params.book;
-let alid = req.params.alid;
-let fn = req.query.fn ? req.query.fn : "";
-getModel().ReadActLessonStud(alid, (err, entity) => {
-    if (err) { next(err); return; }
-    res.render('attrollcall_admin/aa_view.pug', {
-        act_c_id: act_c_id,
-        al_id: alid,
-        profile: req.user,
-        books: entity,
-        fn: fn,
-    });
-});
-///
-router.get('/aas_list/:book/edit', admin_authRequired, (req, res, next) => {
-    let act_c_id = req.params.book;
-    let alid = req.params.book;
+router.get('/aas_list/:act_c_id/:alid/edit', admin_authRequired, (req, res, next) => {
+    let act_c_id = req.params.act_c_id;
+    let alid = req.params.alid;
     let fn = req.query.fn ? req.query.fn : "";
     getModel().ReadActLessonStud(alid, (err, entity) => {
         if (err) { next(err); return; }
@@ -275,25 +259,35 @@ router.get('/aas_list/:book/edit', admin_authRequired, (req, res, next) => {
         });
     });
 });
-router.post('/aas_list/:book/edit', images.multer.single('image'), admin_authRequired, (req, res, next) => {
+router.post('/aas_list/:act_c_id/:alid/edit', images.multer.single('image'), admin_authRequired, (req, res, next) => {
     //ALTER TABLE `eschool`.`studinfo` ADD INDEX `cno_seat` ( `CURR_CLASS` ASC,`CURR_SEAT` ASC);
-    let act_c_id = req.params.book;
+    //ALTER TABLE `act`.`studinfo` ADD COLUMN `grp` VARCHAR(45) NULL AFTER `classmaster`;
+    let act_c_id = req.params.act_c_id;
+    let alid = req.params.alid;
     let fn = req.query.fn ? req.query.fn : "";
     let data=JSON.parse(req.body.STUDLIST)
+    console.log(data)
     let cond1=[]
     for(let temp_ of data)
     {
         if(temp_){
+        temp_=temp_.toUpperCase() ;
         let classno=temp_.substring(0,4)
         let seat=temp_.substring(4)
+        if(temp_.startsWith("I")||temp_.startsWith("P")){
+            classno=temp_.substring(0,3)
+            seat=temp_.substring(3)
+        }
         cond1.push(`(curr_class='${classno}' and curr_seat='${seat}')`)
         }
     }
+    console.log(cond1)
     if(cond1.length>0){
-    getModel().IncActLessonStudByClassSeat(cond1.join(" or "),act_c_id,fn,(err, entity) => {
+    getModel().IncActLessonStudByClassSeat(cond1.join(" or "),act_c_id,alid,fn,(err, entity) => {
         if (err) { next(err); return; }
         res.render('attrollcall_admin/aas_form.pug', {
             act_c_id: act_c_id,
+            al_id: alid,            
             profile: req.user,
             books: entity,
             fn: fn,
@@ -303,10 +297,11 @@ router.post('/aas_list/:book/edit', images.multer.single('image'), admin_authReq
         res.end(JSON.stringify(req.body)+cond1.join(" or "))
     }
 });
-router.get('/aas_list/:book/delete/:as_id', admin_authRequired, (req, res, next) => {
-    let act_c_id = req.params.book;
-    let as_id=req.params.as_id;
-    getModel().DeleteActStud(act_c_id,as_id, (err, entity) => {
+router.get('/aas_list/:act_c_id/:alid/delete/:aa_id', admin_authRequired, (req, res, next) => {
+    let act_c_id = req.params.act_c_id;
+    let al_id = req.params.alid;
+    let aa_id=req.params.as_id;
+    getModel().DeleteActLessonStud(act_c_id,al_id,aa_id, (err, entity) => {
         if (err) { next(err); return; }
         res.end(JSON.stringify(entity.affectedRows));
     });
