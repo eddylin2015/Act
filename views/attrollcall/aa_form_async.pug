@@ -57,8 +57,8 @@ block content
       for book in books
         tr
           td
-            input(type="checkbox", id=`id_${book.aa_id}`)     
-            input(type="text",id=`va_${book.aa_id}`,size=1,readonly,disabled)     
+            input(type="checkbox",name=`id_${book.aa_id}`,id=`id_${book.aa_id}`)     
+            input(type="text",name=`va_${book.aa_id}`,id=`va_${book.aa_id}`,size=1,readonly)     
           td  
             span= book.c_name
             br
@@ -68,15 +68,15 @@ block content
           td
             .form-group
               label(for="title",style="width:20px") 請假
-              input(type="checkbox",name= (`rollcall_${book.aa_id}`), id= (`leave_${book.aa_id}`), value=1, checked= ( book.rollcall == 1 ? true : false ),onclick=`intime(${book.aa_id},this)` )
+              input(type="checkbox", id= (`leave_${book.aa_id}`), value=1, checked= ( book.leave == 1 ? true : false ),onclick=`intime(${book.aa_id},this)` )
           td  
             .form-group
               label(for="title",style="width:20px") 報到
-              input(type="checkbox", name= (`rollcall_${book.aa_id}`),id= (`rollcall_${book.aa_id}`), value=2,checked= ( book.rollcall == 2 ? true : false ),onclick=`intime(${book.aa_id},this)` )
+              input(type="checkbox", id= (`rollcall_${book.aa_id}`), value=1,checked= ( book.rollcall == 1 ? true : false ),onclick=`intime(${book.aa_id},this)` )
           td  
             .form-group
               label(for="title",style="width:20px") 失踪
-              input(type="checkbox", name= (`rollcall_${book.aa_id}`),id= (`miss_${book.aa_id}`), value= 4,checked= ( book.rollcall == 4 ? true : false ),onclick=`intime(${book.aa_id},this)` )
+              input(type="checkbox", id= (`miss_${book.aa_id}`), value= 1,checked= ( book.miss == 1 ? true : false ),onclick=`intime(${book.aa_id},this)` )
     button.btn.btn-success(type="submit") Save
     if !books.length
       p No activity course found.

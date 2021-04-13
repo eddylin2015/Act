@@ -28,7 +28,8 @@ block content
       var x = document.getElementById("out_time_"+x);
       x.value=fmt_time()
     }
-  form(method="POST", enctype="multipart/form-data")
+  form(method="GET", enctype="multipart/form-data")
+    input(type="hidden",name="ACT",value="QUERY")
     lebal STAF_REF
     input(name="STUD_REF",value=stud_ref)
     button.btn.btn-success(type="submit") 查詢

@@ -52,14 +52,9 @@ router.get('/',authRequired, (req, res, next) => {
     });
 });
 router.get('/myrollcall', authRequired, (req, res, next) => {
-    res.render('attrollcall/aa_search_staf.pug', {
-        stud_ref: req.session.att_pass.stud_ref,
-        profile: req.user,
-    });
-});
-
-router.post('/myrollcall', images.multer.single('image'), authRequired, (req, res, next) => {
-    let data=req.body
+    let data=req.query
+    console.log(data)
+    if(data.ACT&&data.ACT=="QUERY"){
     getModel().ReadActLessonStafId(data.STUD_REF, (err, entity) => {
         if (err) { next(err); return; }
         res.render('attrollcall/aa_form.pug', {
@@ -69,6 +64,39 @@ router.post('/myrollcall', images.multer.single('image'), authRequired, (req, re
             fn: "",
         });
     });
+}else{
+
+    res.render('attrollcall/aa_search_staf.pug', {
+        stud_ref: req.session.att_pass.stud_ref,
+        profile: req.user,
+    });
+}
+});
+
+router.post('/myrollcall', images.multer.single('image'), authRequired, (req, res, next) => {
+    let data=req.query
+    console.log(data)
+    if(data.ACT&&data.ACT=="QUERY"){
+    getModel().ReadActLessonStafId(data.STUD_REF, (err, entity) => {
+        if (err) { next(err); return; }
+        res.render('attrollcall/aa_form.pug', {
+            al_id: "",
+            profile: req.user,
+            books: entity,
+            fn: "",
+        });
+    });
+    }else{
+        ///
+        let data=req.body
+        let alid = 0;
+        getModel().UpdateActLessonStud(data,alid, (err, entity) => {
+            if (err) { next(err); return; }
+
+        });
+    });
+
+    }
 });
 
 router.get('/al_list/:book', authRequired, (req, res, next) => {
@@ -155,6 +183,7 @@ router.post('/al_list/:book/edit/:alid', images.multer.single('image'), authRequ
     let alid = req.params.alid;
     let fn = req.query.fn ? req.query.fn : "";
     let data=req.body
+    console.log(data)
     getModel().UpdateActLessonStud(data,alid, (err, entity) => {
         if (err) { next(err); return; }
         res.render('attrollcall/aa_view.pug', {
