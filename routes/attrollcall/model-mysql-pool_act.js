@@ -189,6 +189,20 @@ function ReadActLessonStud(al_id,cb){
             });
     });
 }
+function ReadActLessonStafId(staf_id,cb){
+    pool.getConnection(function (err, connection) {
+        if (err) {
+            cb(err);
+            return;
+        }
+        connection.query(
+            'SELECT * FROM `attrollcall_attend` where stud_ref=? order by classno,seat', [staf_id], (err, results) => {
+                if (err) { cb(err); return; }
+                cb(null, results);
+                connection.release();
+            });
+    });
+}
 async function UpdateActLessonStud(data,al_id,cb){
     pool.getConnection(async function (err, connection) {
         if (err) { cb(err); return; }
@@ -373,6 +387,7 @@ module.exports = {
     CreateActLesson:CreateActLesson,
     CloneActLessonStudList:CloneActLessonStudList,
     ReadActLessonStud:ReadActLessonStud,
+    ReadActLessonStafId:ReadActLessonStafId,
     UpdateActLessonStud:UpdateActLessonStud
 };
 

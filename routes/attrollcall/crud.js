@@ -52,26 +52,21 @@ router.get('/',authRequired, (req, res, next) => {
     });
 });
 router.get('/myrollcall', authRequired, (req, res, next) => {
-    getModel().ReadActLessons(act_c_id, (err, entity) => {
-        if (err) { next(err); return; }
-        res.render('attrollcall/al_list.pug', {
-            act_c_id: act_c_id,
-            profile: req.user,
-            books: entity,
-            fn: fn,
-        });
+    res.render('attrollcall/aa_search_staf.pug', {
+        stud_ref: req.session.att_pass.stud_ref,
+        profile: req.user,
     });
 });
+
 router.post('/myrollcall', images.multer.single('image'), authRequired, (req, res, next) => {
     let data=req.body
-    getModel().UpdateActLessonStud(data,alid, (err, entity) => {
+    getModel().ReadActLessonStafId(data.STUD_REF, (err, entity) => {
         if (err) { next(err); return; }
-        res.render('attrollcall/aa_view.pug', {
-            act_c_id: act_c_id,
-            al_id: alid,
+        res.render('attrollcall/aa_form.pug', {
+            al_id: "",
             profile: req.user,
             books: entity,
-            fn: fn,
+            fn: "",
         });
     });
 });

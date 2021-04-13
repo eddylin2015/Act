@@ -1,0 +1,38 @@
+extends ./base.pug
+block content 
+  
+  link(rel='stylesheet', href='/stylesheets/cool/kidevalform.css')
+  //h3= `${al_id} ${fn}`
+  style.
+    input{color:black}
+    input[type="checkbox"] {
+      border: 1px solid #a9a9a9;
+      border-radius: .25em;
+      width: 1.0em;
+      height: 1.0em;
+    }
+    
+  script.
+    function fmt_time() {
+       let d = new Date(), Y = d.getFullYear(), M = d.getMonth() + 1, D = d.getDate();
+       let HH = d.getHours(), MM = d.getMinutes(), SS = d.getSeconds(), MS = d.getMilliseconds();
+       //return Y + '' + (M < 10 ? "0" + M : M) + '' + (D < 10 ? "0" + D : D) + "" + (HH < 10 ? '0' + HH : HH) + "" + (MM < 10 ? "0" + MM : MM) //+ ":" + SS +":" + MS;
+       return  (HH < 10 ? '0' + HH : HH) + "：" + (MM < 10 ? "0" + MM : MM) 
+    }
+    function intime(x,a){
+      var x = document.getElementById("in_time_"+x);
+      x.value=fmt_time()
+      if(a.value==3) x.value=""
+    }
+    function outtime(x,a){
+      var x = document.getElementById("out_time_"+x);
+      x.value=fmt_time()
+    }
+  form(method="POST", enctype="multipart/form-data")
+    lebal STAF_REF
+    input(name="STUD_REF",value=stud_ref)
+    button.btn.btn-success(type="submit") 查詢
+
+
+
+
