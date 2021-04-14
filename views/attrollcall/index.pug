@@ -4,20 +4,34 @@ block content
   input(class="form-control", id="myInput", type="text", placeholder="Search..")  
   table(class="table table-inverse")#desc
     each book in books
-      tr
-        td
-          if book.activeName != ""
+      -let flag0= sect=="Dept" && book.act_c_id>63
+      -let flag1= sect!="Dept" && book.act_c_id<64
+      if flag0
+        tr
+          td
             .media
               a(href=`/internal/attrollcall/al_list/${book.act_c_id}?fn=${book.activeName}`)
                 .media-left
-                    //img(src=book.imageUrl || "http://placekitten.com/g/128/192")
                 .media-body
                   h4
                     span= book.act_c_id
                     span 	&nbsp;	&nbsp;
                     span= book.active
                     span 	&nbsp;	&nbsp;
-                    span= book.activeName
+                    span= book.activeName                
+      else if flag1
+        tr
+          td
+            .media
+              a(href=`/internal/attrollcall/al_list/${book.act_c_id}?fn=${book.activeName}`)
+                .media-left
+                .media-body
+                  h4
+                    span= book.act_c_id
+                    span 	&nbsp;	&nbsp;
+                    span= book.active
+                    span 	&nbsp;	&nbsp;
+                    span= book.activeName                
 
   if !books.length
     p No activity course found.

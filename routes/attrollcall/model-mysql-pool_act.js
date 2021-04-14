@@ -75,7 +75,7 @@ function ReadActDef(cb) {
             return;
         }
         connection.query(
-            'SELECT * FROM `attrollcall_course_def` ', [], (err, results) => {
+            'SELECT * FROM `attrollcall_course_def` where flag=1; ', [], (err, results) => {
                 if (err) { cb(err); return; }
                 cb(null, results);
                 connection.release();
@@ -195,15 +195,24 @@ function ReadActLessonStafId(staf_id,cb){
             cb(err);
             return;
         }
+        if(/^\d+$/.test(staf_id)){
         connection.query(
             'SELECT * FROM `attrollcall_attend` where stud_ref=? order by classno,seat', [staf_id], (err, results) => {
                 if (err) { cb(err); return; }
                 cb(null, results);
                 connection.release();
             });
+        }else{
+            connection.query(
+                'SELECT * FROM `attrollcall_attend` where c_name=? order by classno,seat', [staf_id], (err, results) => {
+                    if (err) { cb(err); return; }
+                    cb(null, results);
+                    connection.release();
+                });
+        }
     });
 }
-async function UpdateActLessonStud(data,al_id,cb){
+async function UpdateActLessonStud(data,al_id,nowtime,stafby,cb){
     pool.getConnection(async function (err, connection) {
         if (err) { cb(err); return; }
         let cnt = 0;
@@ -217,7 +226,8 @@ async function UpdateActLessonStud(data,al_id,cb){
             for(let i=1;i<li.length-1;i++) fieldname+="_"+li[i]
             if(fieldname=="hours" && val=="") val="0"
             cnt += await new Promise((resolve, reject) => {
-                connection.query(`update attrollcall_attend set ${fieldname}=? where aa_id = ?`,[val,aa_id] , (err, res) => {
+                connection.query(`update attrollcall_attend set ${fieldname}=?,rollcall_time=?,rollall_by=? where aa_id = ?`,
+                     [val,nowtime,stafby,aa_id] , (err, res) => {
                     if (err) { console.log(err); reject(err); }
                     resolve(100);
                 });

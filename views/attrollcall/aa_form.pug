@@ -1,7 +1,5 @@
 extends ./base.pug
 block content 
-  
-  //link(rel='stylesheet', href='/stylesheets/cool/kidevalform.css')
   h3= `${al_id} ${fn}`
   style.
     input{color:black}
@@ -14,13 +12,43 @@ block content
       width: 1.5em;
       height: 1.5em;
     }
-    
   script.
     function fmt_time() {
        let d = new Date(), Y = d.getFullYear(), M = d.getMonth() + 1, D = d.getDate();
        let HH = d.getHours(), MM = d.getMinutes(), SS = d.getSeconds(), MS = d.getMilliseconds();
        //return Y + '' + (M < 10 ? "0" + M : M) + '' + (D < 10 ? "0" + D : D) + "" + (HH < 10 ? '0' + HH : HH) + "" + (MM < 10 ? "0" + MM : MM) //+ ":" + SS +":" + MS;
        return  (HH < 10 ? '0' + HH : HH) + "：" + (MM < 10 ? "0" + MM : MM) 
+    }
+    function rollcallAll(){
+      $("form input:checkbox").each(function () { 
+        
+        if(this.id.startsWith("id"))
+        {
+           let aaid=this.id.split("_")[1]
+           let leave=document.getElementById("leave_"+aaid).checked
+           let rollcall=document.getElementById("rollcall_"+aaid).checked
+           let miss=document.getElementById("miss_"+aaid).checked
+           if(leave || rollcall || miss)
+           {
+           }else
+           {
+             document.getElementById("rollcall_"+aaid).checked=true
+             document.getElementById("id_"+aaid).checked=true
+           }
+        }
+        //if (this.checked == true) this.checked = false;  else  this.checked = true; 
+      }); 
+      //for (i = 0; i < myStud_Cnt; i++)
+      //    if (typeof $('input[name=up_' + myStud[i] + ']:checked').val() != 'undefined')
+      //    { } else { $('#up_' + myStud[i] + '1').attr('checked', 'checked'); }
+    }
+    function reset_row(aaid,a){
+      var x = document.getElementById("id_"+aaid);
+      if(!x.checked) {
+        if(document.getElementById("leave_"+aaid).checked) document.getElementById("leave_"+aaid).checked=false
+        if(document.getElementById("rollcall_"+aaid).checked) document.getElementById("rollcall_"+aaid).checked=false
+        if(document.getElementById("miss_"+aaid).checked) document.getElementById("miss_"+aaid).checked=false
+      }
     }
     function intime(aaid,a){
       var x = document.getElementById("id_"+aaid);
@@ -43,7 +71,6 @@ block content
     }
     function outtime(x,a){
       var x = document.getElementById("out_time_"+x);
-
       x.value=fmt_time()
     }
   form(method="POST", enctype="multipart/form-data")
@@ -52,13 +79,14 @@ block content
         td 更新
         td &nbsp;Name
         td &nbsp;
-        td &nbsp;
+        td 
+          a(onclick="rollcallAll();") 報到_A
         td &nbsp; 
       for book in books
         tr
           td
-            input(type="checkbox", id=`id_${book.aa_id}`)     
-            input(type="text",id=`va_${book.aa_id}`,size=1,readonly,disabled)     
+            input(type="checkbox", id=`id_${book.aa_id}`,onclick=`reset_row(${book.aa_id},this)` )     
+            input(type="hidden",id=`va_${book.aa_id}`,size=1,readonly,disabled) 
           td  
             span= book.c_name
             br

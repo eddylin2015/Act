@@ -12,9 +12,9 @@ block content
       td id
       td Name
       td class
-      td in
-      td out
-      td OT hours
+      td 請假
+      td 報到
+      td 失踪
 
     for book in books
       tr
@@ -26,34 +26,14 @@ block content
           span= book.classno
           span &nbsp;
           span= book.seat 
-        td  
-          span &nbsp;
-          span= book.in_type
-          - in_type_list=["","出席","遲到","缺席"]
-          each val in [1,2,3]
-            if book.in_type == val 
-              if book.in_type == 1
-                span(class="glyphicon glyphicon-ok")            
-              label(class="radio-inline")= in_type_list[val] +"" 
-          span &nbsp;
-          span &nbsp;
-          span 時間:
-          span= book.in_time
-        td  
-          - out_type_list=["","下課","早退","加時"]
-          span &nbsp;
-          span= book.out_type
-          each val in [1,2,3]
-            if  book.out_type == val 
-              if book.out_type == 1
+        - out_type_list=["","請假","報到","","失踪"]
+        span &nbsp;
+        each val in [1,2,4]
+          td
+            if  book.rollcall == val 
+              if book.rollcall == 2
                 span(class="glyphicon glyphicon-ok")
               label(class="radio-inline")= out_type_list[val] +""
-          span &nbsp;
-          span &nbsp;
-          span 時間:
-          span= book.out_time
-        td  
-          span= book.hours
     if !books.length
       p No activity course found.
 
