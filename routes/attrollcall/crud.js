@@ -180,6 +180,7 @@ router.get('/al_list/:book/edit/:alid', authRequired, (req, res, next) => {
             profile: req.user,
             books: entity,
             fn: fn,
+            rollcall_by: req.session.att_pass.stud_ref,
         });
     });
 });

@@ -105,6 +105,12 @@ block content
             .form-group
               label(for="title",style="width:20px") 失踪
               input(type="checkbox", name= (`rollcall_${book.aa_id}`),id= (`miss_${book.aa_id}`), value= 4,checked= ( book.rollcall == 4 ? true : false ),onclick=`intime(${book.aa_id},this)` )
+      tr             
+        td
+          .form-group
+            label(for="title",style="width:20px") 報到
+            input(type="checkbox", name= (`rollcall_${rollcall_by}`),id= (`rollcall_${rollcall_by}`), value=2,checked= true )
+
     button.btn.btn-success(type="submit") Save
     if !books.length
       p No activity course found.
