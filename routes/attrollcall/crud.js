@@ -53,24 +53,26 @@ router.get('/', authRequired, (req, res, next) => {
 });
 
 router.get('/myrollcall', authRequired, (req, res, next) => {
-    let staf=req.session.att_pass.STUD_REF
-    let nowtime=fmt_time();
+    let staf = req.session.att_pass.STUD_REF
+    let nowtime = fmt_time();
     let data = req.query
     console.log(data)
     if (data.ACT && data.ACT == "QUERY") {
-        getModel().ReadActLessonStafId(data.STUD_REF,nowtime,staf ,(err, entity) => {
+        getModel().ReadActLessonStafId(data.STUD_REF, (err, entity) => {
             if (err) { next(err); return; }
             res.render('attrollcall/aa_form.pug', {
                 al_id: "",
                 profile: req.user,
-                books: entity,
+                books: entity[0],
                 fn: "",
+                grp_list: null
             });
         });
     } else {
         res.render('attrollcall/aa_search_staf.pug', {
             stud_ref: req.session.att_pass.stud_ref,
             profile: req.user,
+
         });
     }
 });
@@ -85,8 +87,9 @@ router.post('/myrollcall', images.multer.single('image'), authRequired, (req, re
     let STUD_REF = req.query.STUD_REF
     let data = req.body
     let alid = 0;
-    console.log(data)
-    getModel().UpdateActLessonStud(data, alid, (err, entity) => {
+    let staf = req.session.att_pass.STUD_REF
+    let nowtime = fmt_time();
+    getModel().UpdateActLessonStud(data, alid, nowtime, staf, (err, entity) => {
         if (err) { next(err); return; }
         getModel().ReadActLessonStafId(STUD_REF, (err, entity) => {
             if (err) { next(err); return; }
@@ -98,7 +101,6 @@ router.post('/myrollcall', images.multer.single('image'), authRequired, (req, re
                 fn: "Update.",
                 nowtime: fmt_time(),
                 rollcall_by: req.session.att_pass.stud_ref,
-
             });
         });
     });
@@ -153,6 +155,7 @@ router.post('/al_list/:book/add', authRequired, images.multer.single('image'), (
 }
 );
 router.get('/al_list/:book/view/:alid', authRequired, (req, res, next) => {
+    console.log(req.originalUrl)
     let act_c_id = req.params.book;
     let alid = req.params.alid;
     let fn = req.query.fn ? req.query.fn : "";
@@ -162,10 +165,38 @@ router.get('/al_list/:book/view/:alid', authRequired, (req, res, next) => {
             act_c_id: act_c_id,
             al_id: alid,
             profile: req.user,
-            books: entity,
+            books: entity[0],
+            grp_list: entity[1],
+            fn: fn,
+            act:req.originalUrl
+        });
+    });
+});
+router.post('/al_list/:book/view/:alid', authRequired, (req, res, next) => {
+    let act_c_id = req.params.book;
+    let al_id = req.params.alid;
+    let fn = req.query.fn ? req.query.fn : "";
+    let rollcall_by= req.session.att_pass.stud_ref;
+    if(req.body.act=="add"){
+        
+
+    }else{
+       res.end(`${al_id} ${rollcall_by}  ${req.body.cnt}`)
+    }
+
+    /*
+    getModel().ReadActLessonStud(alid, (err, entity) => {
+        if (err) { next(err); return; }
+        res.render('attrollcall/aa_view.pug', {
+            act_c_id: act_c_id,
+            al_id: alid,
+            profile: req.user,
+            books: entity[0],
+            grp_list: entity[1],
             fn: fn,
         });
     });
+    */
 });
 
 router.get('/al_list/:book/edit/:alid', authRequired, (req, res, next) => {
@@ -178,9 +209,9 @@ router.get('/al_list/:book/edit/:alid', authRequired, (req, res, next) => {
             act_c_id: act_c_id,
             al_id: alid,
             profile: req.user,
-            books: entity,
+            books: entity[0],
+            grp_list: entity[1],
             fn: fn,
-            rollcall_by: req.session.att_pass.stud_ref,
         });
     });
 });
@@ -190,10 +221,10 @@ router.post('/al_list/:book/edit/:alid', images.multer.single('image'), authRequ
     let fn = req.query.fn ? req.query.fn : "";
     let data = req.body
     console.log(data)
-    let staf=req.session.att_pass.STUD_REF
-    let nowtime=fmt_time();
+    let staf = req.session.att_pass.STUD_REF
+    let nowtime = fmt_time();
 
-    getModel().UpdateActLessonStud(data, alid,nowtime,staf, (err, entity) => {
+    getModel().UpdateActLessonStud(data, alid, nowtime, staf, (err, entity) => {
         if (err) { next(err); return; }
         res.render('attrollcall/aa_view.pug', {
             act_c_id: act_c_id,
@@ -201,6 +232,7 @@ router.post('/al_list/:book/edit/:alid', images.multer.single('image'), authRequ
             profile: req.user,
             books: entity,
             fn: fn,
+            grp_list: "aaa",
         });
     });
 });
@@ -355,7 +387,7 @@ router.post('/regStud/markup_jsontwolist', authRequired, (req, Response, next) =
 });
 
 /**
- * Errors on "/studcourse/*" routes.
+ * Errors on "/attrollcall/*" routes.
  */
 router.use((err, req, res, next) => {
     // Format error and forward to generic error handler for logging and

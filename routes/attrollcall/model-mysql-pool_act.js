@@ -5,7 +5,8 @@ const options = {
     host: config.get('ACTMYSQL_HOST'),
     user: config.get('ACTMYSQL_USER'),
     password: config.get('ACTMYSQL_PASSWORD'),
-    database: config.get('ACTMYSQL_DATABASE')
+    database: config.get('ACTMYSQL_DATABASE'),
+    multipleStatements: true
 };
 const pool = mysql.createPool(options);
 
@@ -182,7 +183,7 @@ function ReadActLessonStud(al_id,cb){
             return;
         }
         connection.query(
-            'SELECT * FROM `attrollcall_attend` where al_id=? order by classno,seat', [al_id], (err, results) => {
+            'SELECT * FROM `attrollcall_attend` where al_id=? order by classno,seat; SELECT * FROM `attrollcall_att_grp` where al_id=?', [al_id,al_id], (err, results) => {
                 if (err) { cb(err); return; }
                 cb(null, results);
                 connection.release();
@@ -226,14 +227,47 @@ async function UpdateActLessonStud(data,al_id,nowtime,stafby,cb){
             for(let i=1;i<li.length-1;i++) fieldname+="_"+li[i]
             if(fieldname=="hours" && val=="") val="0"
             cnt += await new Promise((resolve, reject) => {
-                connection.query(`update attrollcall_attend set ${fieldname}=?,rollcall_time=?,rollall_by=? where aa_id = ?`,
+                connection.query(`update attrollcall_attend set ${fieldname}=?,rollcall_time=?,rollcall_by=? where aa_id = ?`,
                      [val,nowtime,stafby,aa_id] , (err, res) => {
                     if (err) { console.log(err); reject(err); }
                     resolve(100);
                 });
             });
         }
+        cnt += await new Promise((resolve, reject) => {
+            connection.query(`update attrollcall_attend set rollcall=2,rollcall_time=? where stud_ref = ?`,
+                 [nowtime,stafby] , (err, res) => {
+                if (err) { console.log(err); reject(err); }
+                resolve(100);
+            });
+        });
+        ReadActLessonStud(al_id,cb)
+        connection.release();
         //cb(null, Math.floor(cnt / 100));
+        
+        
+    });
+}
+async function UpdateActLessonStudGrpCnt(data,act,al_id,cb){
+    pool.getConnection(async function (err, connection) {
+        if (err) { cb(err); return; }
+        if(act=="add"){
+            cnt += await new Promise((resolve, reject) => {
+                connection.query(`update attrollcall_attend set rollcall=2,rollcall_time=? where stud_ref = ?`,
+                     [nowtime,stafby] , (err, res) => {
+                    if (err) { console.log(err); reject(err); }
+                    resolve(100);
+                });
+            });
+        }else if(act=="update"){
+            cnt += await new Promise((resolve, reject) => {
+                connection.query(`update attrollcall_attend set rollcall=2,rollcall_time=? where stud_ref = ?`,
+                     [nowtime,stafby] , (err, res) => {
+                    if (err) { console.log(err); reject(err); }
+                    resolve(100);
+                });
+            });
+       }
         ReadActLessonStud(al_id,cb)
         connection.release();
     });
@@ -398,7 +432,8 @@ module.exports = {
     CloneActLessonStudList:CloneActLessonStudList,
     ReadActLessonStud:ReadActLessonStud,
     ReadActLessonStafId:ReadActLessonStafId,
-    UpdateActLessonStud:UpdateActLessonStud
+    UpdateActLessonStud:UpdateActLessonStud,
+    UpdateActLessonStudGrpCnt:UpdateActLessonStudGrpCnt
 };
 
 if (module === require.main) {

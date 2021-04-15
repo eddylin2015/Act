@@ -1,7 +1,29 @@
 extends ./base.pug
 block content 
+  script.
+    function aaaa(){
+      let cnt=document.getElementById("aa_li_cnt").value;
+      var reg = /^\d+$/;
+      if(cnt.match(reg)){
+      $.post( "#{act}",{cnt:cnt,act:"add"}, function( data ) {
+        //$( ".result" ).html( data );
+        alert( data );
+      });
+      }
+    }
   link(rel='stylesheet', href='/stylesheets/cool/kidevalform.css')
   h3= `${al_id} ${fn}`
+  //form(action=act,method="POST") 
+  span 點名總人數:
+  input(id="aa_li_cnt")
+  input(type="button",class="btn btn-success" ,value="add_cnt",onclick="aaaa();")
+  if grp_list
+    table
+      for b_ in grp_list
+        tr 
+          td a
+          td b
+          td c
   a(href=`/internal/attrollcall/al_list/${act_c_id}/edit/${al_id}?fn=${fn}`, class='btn btn-success btn-sm')
     i.glyphicon.glyphicon-edit
     span 登記出席
