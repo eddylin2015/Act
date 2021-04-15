@@ -168,7 +168,8 @@ router.get('/al_list/:book/view/:alid', authRequired, (req, res, next) => {
             books: entity[0],
             grp_list: entity[1],
             fn: fn,
-            act:req.originalUrl
+            act:req.originalUrl,
+            rollcall_by: req.session.att_pass.stud_ref
         });
     });
 });
