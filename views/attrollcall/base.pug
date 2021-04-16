@@ -7,37 +7,41 @@ html
     link(rel='stylesheet', href='/stylesheets/bootstrap.min.css')
     link(rel='stylesheet', href='/stylesheets/main.css')
     script(src='/javascripts/jquery.js')    
+    script(src='/javascripts/bootstrap.js')        
     style.
       a {color:white;}
   body
-    .navbar.navbar-default
-      .container
+    nav.navbar.navbar-inverse
+      .container-fluid
         .navbar-header
-          .navbar-brand 點名登記
-        ul.nav.navbar-nav
-          li
-            a(href="/internal/") 
-              span(class="glyphicon") &#xe021
-          li
-            a(href="/internal/attrollcall") 班別
-          li
-            a(href="/internal/attrollcall?sect=Dept") 部門
-
-          if att_pass  
+          button.navbar-toggle(type='button', data-toggle='collapse', data-target='#myNavbar')
+            span.icon-bar
+            span.icon-bar
+            span.icon-bar
+          a.navbar-brand(href="#") 點名登記
+        .collapse.navbar-collapse#myNavbar
+          ul.nav.navbar-nav
+            li.active
+              a(href="/internal/") 
+                span(class="glyphicon") &#xe021
             li
-              a(href="/internal/attrollcall/myrollcall") 職員登記
-                      
-          if act_c_id
+              a(href="/internal/attrollcall") 班別
             li
-              a(href=`/internal/attrollcall/al_list/${act_c_id}?fn=${fn}`) 項目(#{act_c_id})            
-
-          //li
-            a(href="/internal/markup/act/actlist") 活動列表
-          //li
-            a(href="/internal/markup/act/cnolist?cno=P") 小學活動分
-          //li
-            a(href="/internal/markup/act/cnolist?cno=S") 中學活動分
-
+              a(href="/internal/attrollcall?sect=Dept") 部門
+            if att_pass  
+              li
+                a(href="/internal/attrollcall/myrollcall") 職員登記
+            if act_c_id
+              li
+                a(href=`/internal/attrollcall/al_list/${act_c_id}?fn=${fn}`) 項目(#{act_c_id})            
+            li
+              a(href="/internal/attrollcall/grp_cnt_list") 班別報數
+            li
+              a(href="/internal/attrollcall/rollcall_list") 點到列表
+            li
+              a(href="/internal/attrollcall/leave_list") 請假列表
+            li
+              a(href="/internal/attrollcall/miss_list") 未跟踪列表
         p.navbar-text.navbar-right
           if att_pass
             a(href="/internal/attrollcall/al_logout",style="color:green") (exit)#{att_pass.stud_ref}            

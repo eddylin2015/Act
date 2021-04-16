@@ -1,69 +1,46 @@
 extends ./base.pug
 block content 
+  style.
+    input{color:black}
   script.
     function aaaa(){
       let staf_ref="#{rollcall_by}"
       ///
       let ori_list=[]
+      let act="add";
       var table = document.getElementById("grp_list");
-      for (var i = 1, row; row = table.rows[i]; i++) {
+      for (var i = 0, row; row = table.rows[i]; i++) {
          //for (var j = 0, col; col = row.cells[j]; j++) {     }
          ori_list.push(`${row.cells[0].innerHTML}`)
+         if(row.cells[0].innerHTML==staf_ref) act="update"
       }      
-      let stud_list=[]
-      let aa=document.getElementById("STUDLIST").value.split('\n');
-      let append_arr=[]
-      for(aa_ of aa ){
-        console.log(aa_.endsWith("*"))
-         if(aa_.endsWith("*")) {
-           let aa__=aa_.replace("*","")
-           for(let i=1;i<40;i++){
-             append_arr.push(aa__+i);
-           }
-         }
-      }
-      aa =aa.concat(append_arr)
-      for(aa_ of aa ){
-        aaa_=aa_.split(";")
-        for(bb_ of aaa_) {
-          bb_=bb_.toUpperCase().trim().replace(/\W+/g,"");
-          var res = re.exec(bb_);
-          if(res){ for(res_ of res){ if(ori_list.indexOf(res_)<0) stud_list.push(res_) }   }
-          res = re1.exec(bb_);
-          if(res){ for(res_ of res){ if(ori_list.indexOf(res_)<0) stud_list.push(res_) }   }
-          res = re2.exec(bb_);
-          if(res){ for(res_ of res){ if(ori_list.indexOf(res_)<0) stud_list.push(res_) }   }
-          res = re3.exec(bb_);
-          if(res){ for(res_ of res){ if(ori_list.indexOf(res_)<0) stud_list.push(res_) }   }
-
-        }
-      }
-      document.getElementById("STUDLIST").value=JSON.stringify(stud_list)
-      document.forms["formid"].submit();
-
-      ///
       let cnt=document.getElementById("aa_li_cnt").value;
       var reg = /^\d+$/;
-      if(cnt.match(reg)){
-      $.post( "#{act}",{cnt:cnt,act:"add"}, function( data ) {
+      if(cnt.match(reg) && (Number(cnt)>0 && Number(cnt) < 100) ){
+        
+      $.post( "#{act}",{cnt:cnt,act:act}, function( data ) {
         //$( ".result" ).html( data );
-        alert( data );
+        let table_ctx=""
+        for(let r of JSON.parse(data)){
+          table_ctx+=`<tr><td>${r.stud_ref}<td>${r.al_id}<td>${r.classno}<td>${r.cnt}`
+        }
+        $( "#grp_list" ).html( table_ctx );
       });
       }
     }
   link(rel='stylesheet', href='/stylesheets/cool/kidevalform.css')
   h3= `${al_id} ${fn}`
-  //form(action=act,method="POST") 
-  span 點名總人數:
-  input(id="aa_li_cnt")
-  input(type="button",class="btn btn-success" ,value="add_cnt",onclick="aaaa();")
+  span 該班報到點名總人數:
+  input(id="aa_li_cnt",size=4)
+  input(type="button",class="btn btn-success" ,value="點名總人數",onclick="aaaa();")
   table#grp_list  
     if grp_list
       for b_ in grp_list
         tr 
           td= b_.stud_ref
+          td= b_.al_id
+          td= b_.classno
           td= b_.cnt
-          td c
   a(href=`/internal/attrollcall/al_list/${act_c_id}/edit/${al_id}?fn=${fn}`, class='btn btn-success btn-sm')
     i.glyphicon.glyphicon-edit
     span 登記出席

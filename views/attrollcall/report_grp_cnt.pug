@@ -1,0 +1,50 @@
+extends ./base.pug
+block content 
+  h3 列表
+  input(class="form-control", id="myInput", type="text", placeholder="Search..")  
+  -let mcnt=0;  
+  -let f=0;
+
+  table(class="table table-inverse")#desc
+    tr
+      th id
+      th al_id 
+      th classno 
+      th staf_ref 
+      th count
+    each book in books
+      -if(f==0 ) {f=book.al_id}
+      -if(f==book.al_id){mcnt+=Number(book.cnt)}
+      if f!=book.al_id 
+        tr 
+          td total
+          td 
+          td
+          td
+          td= mcnt 
+        - mcnt=Number(book.cnt)
+        - f=book.al_id 
+      tr
+        td= book.aag_id
+        td= book.al_id
+        td= book.classno
+        td= book.stud_ref 
+        td= book.cnt 
+    if f>0
+      tr
+        td total      
+        td 
+        td
+        td
+        td= mcnt
+  if !books.length
+    p No activity course found.
+  script.
+    $(document).ready(function(){
+      $("#myInput").on("keyup", function() {
+        var value = $(this).val().toLowerCase();
+        $("#desc tr").filter(function() {
+          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+      });
+    });      

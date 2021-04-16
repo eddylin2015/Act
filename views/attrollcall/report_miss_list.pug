@@ -1,0 +1,32 @@
+extends ./base.pug
+block content 
+  h3 列表
+  input(class="form-control", id="myInput", type="text", placeholder="Search..")  
+  table(class="table table-inverse")#desc
+    tr
+      th classno 
+      th seat 
+      th c_name 
+      th rollcall 
+      th rollcall_time 
+      th rollcall_by
+    each book in books
+      tr 
+        td= book.classno
+        td= book.seat 
+        td= book.c_name 
+        td= book.rollcall 
+        td= book.rollcall_time 
+        td= book.rollcall_by
+
+  if !books.length
+    p No activity course found.
+  script.
+    $(document).ready(function(){
+      $("#myInput").on("keyup", function() {
+        var value = $(this).val().toLowerCase();
+        $("#desc tr").filter(function() {
+          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+      });
+    });      

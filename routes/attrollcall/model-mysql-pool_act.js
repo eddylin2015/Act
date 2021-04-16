@@ -183,7 +183,7 @@ function ReadActLessonStud(al_id,cb){
             return;
         }
         connection.query(
-            'SELECT * FROM `attrollcall_attend` where al_id=? order by classno,seat; SELECT * FROM `attrollcall_att_grp` where al_id=?', [al_id,al_id], (err, results) => {
+            'SELECT * FROM `attrollcall_attend` where al_id=? order by classno,seat; SELECT * FROM `attrollcall_att_grp` where al_id=? and flag=1', [al_id,al_id], (err, results) => {
                 if (err) { cb(err); return; }
                 cb(null, results);
                 connection.release();
@@ -227,6 +227,7 @@ async function UpdateActLessonStud(data,al_id,nowtime,stafby,cb){
             for(let i=1;i<li.length-1;i++) fieldname+="_"+li[i]
             if(fieldname=="hours" && val=="") val="0"
             cnt += await new Promise((resolve, reject) => {
+                console.log([val,nowtime,stafby,aa_id] );
                 connection.query(`update attrollcall_attend set ${fieldname}=?,rollcall_time=?,rollcall_by=? where aa_id = ?`,
                      [val,nowtime,stafby,aa_id] , (err, res) => {
                     if (err) { console.log(err); reject(err); }
@@ -241,28 +242,31 @@ async function UpdateActLessonStud(data,al_id,nowtime,stafby,cb){
                 resolve(100);
             });
         });
-        ReadActLessonStud(al_id,cb)
+        cb(null,al_id)
+        //ReadActLessonStud(al_id,cb)
         connection.release();
         //cb(null, Math.floor(cnt / 100));
         
         
     });
 }
-async function UpdateActLessonStudGrpCnt(data,act,al_id,cb){
+async function UpdateActLessonStudGrpCnt(cnt,act,al_id,classno,stafby,cb){
     pool.getConnection(async function (err, connection) {
         if (err) { cb(err); return; }
+        let cnt_=0
         if(act=="add"){
-            cnt += await new Promise((resolve, reject) => {
-                connection.query(`update attrollcall_attend set rollcall=2,rollcall_time=? where stud_ref = ?`,
-                     [nowtime,stafby] , (err, res) => {
+            let data_ ={aag_id:0,al_id:al_id,classno:classno,stud_ref:stafby,cnt:cnt,flag:1}
+            cnt_ += await new Promise((resolve, reject) => {
+                connection.query(` INSERT INTO attrollcall_att_grp SET ? `,
+                     [data_] , (err, res) => {
                     if (err) { console.log(err); reject(err); }
                     resolve(100);
                 });
             });
         }else if(act=="update"){
-            cnt += await new Promise((resolve, reject) => {
-                connection.query(`update attrollcall_attend set rollcall=2,rollcall_time=? where stud_ref = ?`,
-                     [nowtime,stafby] , (err, res) => {
+            cnt_ += await new Promise((resolve, reject) => {
+                connection.query(`update attrollcall_att_grp set cnt=? where al_id=? and stud_ref = ?`,
+                     [cnt,al_id,stafby] , (err, res) => {
                     if (err) { console.log(err); reject(err); }
                     resolve(100);
                 });
@@ -272,6 +276,46 @@ async function UpdateActLessonStudGrpCnt(data,act,al_id,cb){
         connection.release();
     });
 }
+
+function ReadREP_Grp_Cnt( cb) {
+    pool.getConnection(function (err, connection) {
+        if (err) {
+            cb(err);
+            return;
+        }
+        connection.query(
+            [" select * ",
+            " from attrollcall_att_grp ",
+            "where flag=1 ",
+            "order by al_id"].join(" "),
+            [], (err, results) => {
+                if (err) { cb(err); return; }
+                cb(null, results);
+                connection.release();
+            });
+    });
+}
+
+function ReadREP_Miss_List( i,cb) {
+    pool.getConnection(function (err, connection) {
+        if (err) {
+            cb(err);
+            return;
+        }
+        connection.query(
+            [" select * ",
+            " from attrollcall_attend ",
+            "where rollcall=? ",
+            "order by classno,seat"].join(" "),
+            [i], (err, results) => {
+                if (err) { cb(err); return; }
+                cb(null, results);
+                connection.release();
+            });
+    });
+
+}
+
 function ReadClassStudAct(cno, cb) {
     pool.getConnection(function (err, connection) {
         if (err) {
@@ -433,7 +477,10 @@ module.exports = {
     ReadActLessonStud:ReadActLessonStud,
     ReadActLessonStafId:ReadActLessonStafId,
     UpdateActLessonStud:UpdateActLessonStud,
-    UpdateActLessonStudGrpCnt:UpdateActLessonStudGrpCnt
+    UpdateActLessonStudGrpCnt:UpdateActLessonStudGrpCnt,
+    ReadREP_Grp_Cnt:ReadREP_Grp_Cnt,
+    ReadREP_Miss_List:ReadREP_Miss_List
+
 };
 
 if (module === require.main) {
