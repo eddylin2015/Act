@@ -42,7 +42,7 @@ html
               a(href="/internal/attrollcall/leave_list") 請假列表
             li
               a(href="/internal/attrollcall/miss_list") 未跟踪列表
-        p.navbar-text.navbar-right
+        ul.navbar-text.navbar-right
           if att_pass
             a(href="/internal/attrollcall/al_logout",style="color:green") (exit)#{att_pass.stud_ref}            
           if profile
