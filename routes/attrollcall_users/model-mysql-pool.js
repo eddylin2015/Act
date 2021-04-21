@@ -14,7 +14,7 @@ function list( userId , cb) {
         if(err){cb(err);return;}
         // Use the connection
         connection.query(
-            'SELECT * FROM `localnews` order by id DESC ',[],
+            'SELECT * FROM `studinfo` order by stud_ref DESC ',[],
             (err, results) => {
                 if (err) {
                     cb(err);
@@ -31,7 +31,7 @@ function listMore( limit,  token, cb) {
     pool.getConnection(function (err, connection) {
         if(err){cb(err);return;}
         connection.query(
-            'SELECT *  FROM `localnews` order by id DESC LIMIT ? OFFSET ?', //, DAYOFWEEK(logDate)-1 dw
+            'SELECT *  FROM `studinfo` order by stud_ref DESC LIMIT ? OFFSET ?', //, DAYOFWEEK(logDate)-1 dw
             [ limit, token],
             (err, results) => {
                 if (err) {
@@ -50,7 +50,7 @@ function listBy(id, limit, token, cb) {
     pool.getConnection(function (err, connection) {
         if(err){cb(err);return;}
         connection.query(
-            'SELECT * FROM `localnews` where createdById = ? order by id desc  LIMIT ? OFFSET ?',
+            'SELECT * FROM `studinfo` where stud_ref = ? order by stud_ref desc  LIMIT ? OFFSET ?',
             [ id,limit, token],
             (err, results) => {
                 if (err) {
@@ -64,57 +64,17 @@ function listBy(id, limit, token, cb) {
             });
     });
 }
-function tdmlist( limit, token, cb) {
-    token = token ? parseInt(token, 10) : 0;
+
+function create( data, cb) {
     pool.getConnection(function (err, connection) {
         if(err){cb(err);return;}
-        connection.query(
-            'SELECT * FROM `newscontent` order by id desc  LIMIT ? OFFSET ?',
-            [ limit, token],
-            (err, results) => {
-                if (err) {
-                    cb(err);
-                    return;
-                }
-                const hasMore = results.length === limit ? token + results.length : false;
-                cb(null, results, hasMore);
-                connection.release();
-
-            });
-    });
-}
-function govnewslist(limit, token, cb) {
-    token = token ? parseInt(token, 10) : 0;
-    pool.getConnection(function (err, connection) {
-        if(err){cb(err);return;}
-        connection.query(
-            'SELECT * FROM `newscontent` where link like \'%www.gcs.gov.mo%\' order by id desc  LIMIT ? OFFSET ?',
-            [limit, token],
-            (err, results) => {
-                if (err) {
-                    cb(err);
-                    return;
-                }
-                const hasMore = results.length === limit ? token + results.length : false;
-                cb(null, results, hasMore);
-                connection.release();
-
-            });
-    });
-}
-
-
-function create(userid, data, cb) {
-    //console.log(data);
-    
-    pool.getConnection(function (err, connection) {
-        if(err){cb(err);return;}
-        connection.query('INSERT INTO `localnews` SET ? ', [data], (err, res) => {
+        connection.query('INSERT INTO `studinfo` SET ? ', [data], (err, res) => {
             if (err) {
                 cb(err);
                 return;
             }
-            read(userid, res.insertId, cb);
+            //read( res.insertId, cb);
+            read( data.stud_ref, cb);
             //read(res.insertId, cb);
             //cb(null);
             connection.release();
@@ -122,13 +82,13 @@ function create(userid, data, cb) {
     });
 }
 
-function read(userid, id, cb) {
+function read( id, cb) {
 
    // console.log(id);
     pool.getConnection(function (err, connection) {
         if(err){cb(err);return;}
         connection.query(
-            'SELECT * FROM `localnews` WHERE `id` = ? ', id, (err, results) => {
+            'SELECT * FROM `studinfo` WHERE `stud_ref` = ? ', id, (err, results) => {
                 if (!err && !results.length) {
                     err = {
                         code: 404,
@@ -144,29 +104,43 @@ function read(userid, id, cb) {
             });
     });
 }
-function update(userid, id, data, cb) {
+function update( id, data, cb) {
     pool.getConnection(function (err, connection) {
         if(err){cb(err);return;}
         connection.query(
-            'UPDATE `localnews` SET ? WHERE `id` = ?  ', [data, id], (err) => {   //and `createdById` = ?
+            'UPDATE `studinfo` SET ? WHERE `stud_ref` = ?  ', [data, id], (err) => {   //and `createdById` = ?
                 if (err) {
                     cb(err);
                     return;
                 }
-                read(userid, id, cb);
+                read(id, cb);
                 connection.release();
             });
     });
 }
 
-function _delete(userid,id ,cb) {
+function _delete(id ,cb) {
     pool.getConnection(function (err, connection) {
         if(err){cb(err);return;}
-        connection.query('DELETE FROM `localnews` WHERE `id` = ? ',[ id ],  cb);
+        connection.query('DELETE FROM `studinfo` WHERE `stud_ref` = ? ',[ id ],  cb);
         connection.release();
     });
 }
 
+function ReadStafbyId(STAFID,cb) {
+    pool.getConnection(function (err, connection) {
+        if (err) {
+            cb(err);
+            return;
+        }
+        connection.query(
+            'SELECT * FROM `studinfo` WHERE stud_ref=?;', [STAFID], (err, results) => {
+                if (err) { cb(err); return; }
+                cb(null, results);
+                connection.release();
+            });
+    });
+}
 module.exports = {
     createSchema: createSchema,
     list: list,
@@ -174,10 +148,9 @@ module.exports = {
     create: create,
     read: read,
     listBy: listBy,
-    tdmlist: tdmlist,
-    govnewslist: govnewslist,
     update: update,
-    delete: _delete
+    delete: _delete,
+    ReadStafbyId:ReadStafbyId
 };
 
 if (module === require.main) {
@@ -223,7 +196,7 @@ function createSchema(config) {
     DEFAULT CHARACTER SET = 'utf8'
     DEFAULT COLLATE 'utf8_general_ci';
     USE \`joehong\`;
-  CREATE TABLE \`localnews\` (
+  CREATE TABLE \`studinfo\` (
   \`id\` INT UNSIGNED NOT NULL AUTO_INCREMENT,
       \`title\` VARCHAR(255) NULL,
       \`author\` VARCHAR(255) NULL,

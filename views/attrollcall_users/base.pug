@@ -11,24 +11,20 @@ html
       .container
         .navbar-header
           .navbar-brand 
-          a.navbar-brand  LOCAL NEWS
+          a.navbar-brand  Users
         ul.nav.navbar-nav
           li
             a(href="/internal/") 
               span(class="glyphicon") &#xe021
           li
-            a(href="/internal/localnews") 本地新聞
+            a(href="/internal/attrollcall_users/list") list
           li
-            a(href="/internal/localnews/sync") 更新
-          li
-            a(href="/internal/localnews/mine") 我的記錄
-          li
-            a(href="/internal/localnews/list") 記錄
-          li
-            a(href="/internal/localnews/tdmlist") tdm_news
-          li
-            a(href="/internal/localnews/govnewslist") gov_news
-        p.navbar-text.navbar-right
+            a(href="/internal/attrollcall_users/mine") 我的記錄
+
+        ul.navbar-text.navbar-right
+          if al_pass
+            a(href="/internal/attrollcall_users/al_logout",style="color:green") (exit)#{al_pass.stud_ref}                         
+
           if profile
             if profile.image
               img.img-circle(src=profile.image, width=24)

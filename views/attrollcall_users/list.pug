@@ -16,19 +16,19 @@ extends ./base.pug
 block content
   h3 Job Note
   meta(http-equiv="refresh", content="300")
-  a(href="/internal/localnews/add", class='btn btn-success btn-sm')
+  a(href="/internal/attrollcall_users/add", class='btn btn-success btn-sm')
     i.glyphicon.glyphicon-plus
-    span  Add Work Log
+    span  Add User
   table#desc
     each book in books
       tr
         td
           .media
-            a(href=`/internal/localnews/${book.id}`, style="color: black; ")
+            a(href=`/internal/attrollcall_users/${book.stud_ref}`, style="color: black; ")
               .media-left
-                img(src=book.imageUrl || "/images/deptworklog.jpg")
+                //img(src=book.imageUrl || "/images/deptworklog.jpg")
               .media-body
-                h4(  style="color: white;background-color:#222; ")= (book.id + "|" + book.title)
+                h4(  style="color: white;background-color:#222; ")= (book.stud_ref + "|" + book.c_name+ "|" + book.curr_class+ "|" + book.curr_seat)
                   if book.deptlog>0
                     span(class="glyphicon glyphicon-ok")
                   else if book.deptlog<0
@@ -37,8 +37,7 @@ block content
                     span(class="glyphicon glyphicon-pencil")
       tr
         td
-          small= book.newstxt
-          small= book.author
+          small= book.key_md
 
   if !books.length
     p No work log found.

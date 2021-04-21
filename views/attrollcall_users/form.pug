@@ -1,0 +1,39 @@
+﻿//- Copyright 2017, Google, Inc.
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+extends ./base.pug
+
+block content
+  h3 #{action} book
+  form(method="POST")
+    .form-group
+      label(for="stud_ref") stud_ref
+      input.form-control(type="text", name="stud_ref", id="stud_ref", value=book.stud_ref)
+
+    .form-group
+      label(for="dsej") dsej
+      input.form-control(type="text", name="dsej_ref", id="dsej_ref", value=book.dsej_ref)
+    .form-group
+      label(for="c_name") c_name
+      input.form-control(type="text", name="c_name", id="c_name", value=book.c_name)
+    .form-group
+      label(for="curr_class") curr_class
+      input.form-control(type="text", name="curr_class", id="curr_class", value=book.curr_class)
+    .form-group
+      label(for="curr_seat") curr_seat
+      input.form-control(type="text", name="curr_seat", id="curr_seat", value=book.curr_seat)
+    .form-group
+      label(for="key_md") key_md
+      input.form-control(type="text", name="key_md", id="key_md", value=book.key_md)
+    .form-group
+    button.btn.btn-success(type="submit") Save

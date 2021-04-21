@@ -9,11 +9,13 @@ block content
     function delrec(x,as_id){
       console.log(x)
       ///as_list/:book/delete/:as_id
-      url=`/internal/activitycourses_admin/aas_list/#{act_c_id}/#{al_id}/delete/${as_id}`
+      url=`/internal/attrollcall_admin/aas_list/#{act_c_id}/#{al_id}/delete/${as_id}`
+      console.log(url)
       $.get( url, function( data ) {
-       // alert( JSON.stringify(data) );
-      });
+       alert( JSON.stringify(data) );
        x.parentElement.parentElement.style.display="none"
+      });
+       
        //x.text="已經刪除"
        //document.getElementById("demo")
        
@@ -78,7 +80,7 @@ block content
         td= book.seat
         td= book.c_name
         td
-          a(href='#',onclick=`delrec(this,${book.as_id});`, class='btn btn-danger btn-sm')
+          a(href='#',onclick=`delrec(this,${book.aa_id});`, class='btn btn-danger btn-sm')
             i.glyphicon.glyphicon-minus Del
     span  Add lesson
   h3 新增學生

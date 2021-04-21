@@ -48,6 +48,9 @@ function admin_authRequired(req, res, next) {
     if (!req.session.att_adm_pass) {
         return res.redirect(`/internal/attrollcall_admin/al_login/`);
     }
+    if (req.session.att_adm_pass.stud_ref!="2002024") {
+        return res.redirect(`/internal/attrollcall_admin/al_login/`);
+    }
     next();
 }
 const router = express.Router();
@@ -306,9 +309,6 @@ router.get('/aas_list/:act_c_id/:alid/delete/:aa_id', admin_authRequired, (req, 
         res.end(JSON.stringify(entity.affectedRows));
     });
 });
-//User_List
-//User_Update(datajson)
-//User_Add(staf_ref)
 
 //User_List
 router.get('/userlist', admin_authRequired, (req, Response, next) => {

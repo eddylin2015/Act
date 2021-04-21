@@ -18,18 +18,19 @@ block content
     small
 
   .btn-group
-    a(href=`/internal/localnews/${book.id}/edit`, class='btn btn-primary btn-sm')
+    a(href=`/internal/attrollcall_users/${book.stud_ref}/edit`, class='btn btn-primary btn-sm')
       i.glyphicon.glyphicon-edit
-      span  Edit book
-    a(href=`/internal/localnews/${book.id}/delete`, class='btn btn-danger btn-sm')
+      span  Edit User
+    a(href=`/internal/attrollcall_users/${book.stud_ref}/delete`, class='btn btn-danger btn-sm')
       i.glyphicon.glyphicon-trash
-      span  Delete book
+      span  Delete User
 
   .media
     .media-body
-      h4= book.title
+      h4= book.stud_ref
+      h4= book.dsej_ref
+      h4= book.c_name
+      h4= book.curr_class
+      h4= book.curr_seat
         | &nbsp;
-        small= book.publishedDate
-      h5 By #{book.author||'unknown'}
-      p= book.description
-      textarea(rows=15,style='xwidth: 80%;font-size:24px;width:100%;margin:0;padding:0;color: white;background-color:black;') !{book.newstxt}
+        small= book.key_md
