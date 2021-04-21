@@ -1,0 +1,40 @@
+﻿doctype html
+html
+  head
+    title LOCAL NEWS
+    meta(charset='utf-8')
+    meta(name="viewport", content="width=device-width, initial-scale=1")
+    link(rel='stylesheet', href='/stylesheets/bootstrap.min.css')
+    link(rel='stylesheet', href='/stylesheets/main.css')
+  body
+    .navbar.navbar-default
+      .container
+        .navbar-header
+          .navbar-brand 
+          a.navbar-brand  LOCAL NEWS
+        ul.nav.navbar-nav
+          li
+            a(href="/internal/") 
+              span(class="glyphicon") &#xe021
+          li
+            a(href="/internal/localnews") 本地新聞
+          li
+            a(href="/internal/localnews/sync") 更新
+          li
+            a(href="/internal/localnews/mine") 我的記錄
+          li
+            a(href="/internal/localnews/list") 記錄
+          li
+            a(href="/internal/localnews/tdmlist") tdm_news
+          li
+            a(href="/internal/localnews/govnewslist") gov_news
+        p.navbar-text.navbar-right
+          if profile
+            if profile.image
+              img.img-circle(src=profile.image, width=24)
+            span #{profile.displayName} &nbsp;
+              a(href='/logout') (logout)
+          else
+            a(href='/login') Login
+    .container
+      block content
