@@ -18,21 +18,6 @@ function authRequired(req, res, next) {
     next();
 }
 
-function admin_authRequired(req, res, next) {
-    let act_c_id = req.params.book;
-    let fn = req.query.fn ? req.query.fn : "";
-    if (req.user) {
-        req.session.al_pass = act_c_id
-    }
-    if (!req.session.al_pass) {
-        return res.redirect(`/internal/attrollcall/al_login/${act_c_id}?fn=${encodeURI(fn)}`);
-    }
-    if (req.session.al_pass != act_c_id) {
-        return res.redirect(`/internal/attrollcall/al_login/${act_c_id}?fn=${encodeURI(fn)}`);
-    }
-    next();
-}
-
 const router = express.Router();
 
 router.use((req, res, next) => {
@@ -60,7 +45,7 @@ router.get('/grp_cnt_list', authRequired, (req, res, next) => {
             books: entity,
             att_pass: req.session.att_pass,
             sect: req.query.sect,
-
+            fn:"班總數",
         });
     });
 });
@@ -72,7 +57,8 @@ router.get('/miss_list', authRequired, (req, res, next) => {
             profile: req.user,
             books: entity,
             att_pass: req.session.att_pass,
-            sect: req.query.sect
+            sect: req.query.sect,
+            fn:"失踪"
         });
     });
 });
@@ -84,7 +70,8 @@ router.get('/rollcall_list', authRequired, (req, res, next) => {
             profile: req.user,
             books: entity,
             att_pass: req.session.att_pass,
-            sect: req.query.sect
+            sect: req.query.sect,
+            fn:"報到"
         });
     });
 });
@@ -96,10 +83,25 @@ router.get('/leave_list', authRequired, (req, res, next) => {
             profile: req.user,
             books: entity,
             att_pass: req.session.att_pass,
-            sect: req.query.sect
+            sect: req.query.sect,
+            fn:"請假"
         });
     });
 });
+router.get('/unknown_list', authRequired, (req, res, next) => {
+    getModel().ReadREP_Unknown_List(0,100,req.query.pageToken,(err, entity,cursor) => {
+        if (err) { next(err); return; }
+        res.render('attrollcall/report_miss_list.pug', {
+            profile: req.user,
+            books: entity,
+            att_pass: req.session.att_pass,
+            sect: req.query.sect,
+            fn:"狀態未明",
+            nextPageToken: cursor
+        });
+    });
+});
+
 
 router.get('/myrollcall', authRequired, (req, res, next) => {
     let staf = req.session.att_pass.stud_ref
@@ -276,7 +278,6 @@ router.post('/al_list/:book/edit/:alid', images.multer.single('image'), authRequ
     console.log(req.session.att_pass)
     let staf = req.session.att_pass.stud_ref
     let nowtime = fmt_time();
-
     getModel().UpdateActLessonStud(data, alid, nowtime, staf, (err, entity) => {
         if (err) { next(err); return; }
         res.redirect(req.originalUrl.replace("edit","view"))

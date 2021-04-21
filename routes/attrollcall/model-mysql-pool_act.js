@@ -302,6 +302,7 @@ function ReadREP_Miss_List( i,cb) {
             cb(err);
             return;
         }
+
         connection.query(
             [" select * ",
             " from attrollcall_attend ",
@@ -310,6 +311,27 @@ function ReadREP_Miss_List( i,cb) {
             [i], (err, results) => {
                 if (err) { cb(err); return; }
                 cb(null, results);
+                connection.release();
+            });
+    });
+}
+
+function ReadREP_Unknown_List( i, limit, token, cb) {
+    token = token ? parseInt(token, 10) : 0;
+    pool.getConnection(function (err, connection) {
+        if (err) {
+            cb(err);
+            return;
+        }
+        connection.query(
+            [" select * ",
+            " from attrollcall_attend ",
+            "where isNull(rollcall) or rollcall=? ",
+            "order by classno,seat LIMIT ? OFFSET ?"].join(" "),
+            [i, limit, token], (err, results) => {
+                if (err) { cb(err); return; }
+                const hasMore = results.length === limit ? token + results.length : false;
+                cb(null, results, hasMore);
                 connection.release();
             });
     });
@@ -479,7 +501,8 @@ module.exports = {
     UpdateActLessonStud:UpdateActLessonStud,
     UpdateActLessonStudGrpCnt:UpdateActLessonStudGrpCnt,
     ReadREP_Grp_Cnt:ReadREP_Grp_Cnt,
-    ReadREP_Miss_List:ReadREP_Miss_List
+    ReadREP_Miss_List:ReadREP_Miss_List,
+    ReadREP_Unknown_List:ReadREP_Unknown_List
 
 };
 

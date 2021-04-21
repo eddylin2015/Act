@@ -1,6 +1,6 @@
 extends ./base.pug
 block content 
-  h3 列表
+  h3 列表 #{fn}
   input(class="form-control", id="myInput", type="text", placeholder="Search..")  
   table(class="table table-inverse")#desc
     tr
@@ -21,6 +21,17 @@ block content
 
   if !books.length
     p No activity course found.
+
+  -var prePageToken = nextPageToken - 200 > 0 ? nextPageToken - 200 : 0
+  nav
+    ul.pager
+      li
+        a(href=`?pageToken=${encodeURIComponent(prePageToken)}`,style="color:black") Prev
+      if nextPageToken
+        li
+          a(href=`?pageToken=${encodeURIComponent(nextPageToken)}`,style="color:black") More    
+
+
   script.
     $(document).ready(function(){
       $("#myInput").on("keyup", function() {

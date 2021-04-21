@@ -11,7 +11,8 @@ html
     style.
       a {color:white;}
   body
-    nav.navbar.navbar-inverse
+    .navbar.navbar-default
+      //-default -inverse
       .container-fluid
         .navbar-header
           button.navbar-toggle(type='button', data-toggle='collapse', data-target='#myNavbar')
@@ -33,24 +34,31 @@ html
                 a(href="/internal/attrollcall/myrollcall") 職員登記
             if act_c_id
               li
-                a(href=`/internal/attrollcall/al_list/${act_c_id}?fn=${fn}`) 項目(#{act_c_id})            
-            li
-              a(href="/internal/attrollcall/grp_cnt_list") 班別報數
-            li
-              a(href="/internal/attrollcall/rollcall_list") 點到列表
-            li
-              a(href="/internal/attrollcall/leave_list") 請假列表
-            li
-              a(href="/internal/attrollcall/miss_list") 未跟踪列表
-        ul.navbar-text.navbar-right
-          if att_pass
-            a(href="/internal/attrollcall/al_logout",style="color:green") (exit)#{att_pass.stud_ref}            
-          if profile
-            if profile.image
-              img.img-circle(src=profile.image, width=24)
-            span #{profile.displayName} &nbsp;
-              //a(href='/logout') (logout)
-          else
-            //a(href='/login') Login
+                a(href=`/internal/attrollcall/al_list/${act_c_id}?fn=${fn}`) 項目(#{act_c_id})     
+            li(class="dropdown")
+              a( class="dropdown-toggle", data-toggle="dropdown", href="#" ) 總表                
+                span(class="caret")
+                  ul(class="dropdown-menu")
+                    li
+                      a(href="/internal/attrollcall/grp_cnt_list") 班別報數
+                    li
+                      a(href="/internal/attrollcall/rollcall_list") 點到列表
+                    li
+                      a(href="/internal/attrollcall/leave_list") 請假列表
+                    li
+                      a(href="/internal/attrollcall/miss_list") 失踪列表
+                    li
+                      a(href="/internal/attrollcall/unknown_list") 狀態未明
+
+          ul.navbar-text.navbar-right
+            if att_pass
+              a(href="/internal/attrollcall/al_logout",style="color:green") (exit)#{att_pass.stud_ref}            
+            if profile
+              if profile.image
+                img.img-circle(src=profile.image, width=24)
+              span #{profile.displayName} &nbsp;
+                //a(href='/logout') (logout)
+            else
+              //a(href='/login') Login
     .container
       block content
