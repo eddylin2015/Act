@@ -124,7 +124,6 @@ async function UpdateActDef(aObj, cb) {
 }
 
 function CreateActLesson(data, cb) {
-    //console.log(data);
     mysqlcfg.esdbPool.getConnection(function (err, conn) {
         if (err) { cb(err); return; }
         conn.query('INSERT INTO `attrollcall_lesson` SET ? ', [data], (err, res) => {
@@ -227,7 +226,7 @@ async function UpdateActLessonStud(data,al_id,nowtime,stafby,cb){
             for(let i=1;i<li.length-1;i++) fieldname+="_"+li[i]
             if(fieldname=="hours" && val=="") val="0"
             cnt += await new Promise((resolve, reject) => {
-                console.log([val,nowtime,stafby,aa_id] );
+                //console.log([val,nowtime,stafby,aa_id] );
                 connection.query(`update attrollcall_attend set ${fieldname}=?,rollcall_time=?,rollcall_by=? where aa_id = ?`,
                      [val,nowtime,stafby,aa_id] , (err, res) => {
                     if (err) { console.log(err); reject(err); }
@@ -302,7 +301,6 @@ function ReadREP_Miss_List( i,cb) {
             cb(err);
             return;
         }
-
         connection.query(
             [" select * ",
             " from attrollcall_attend ",
@@ -314,6 +312,7 @@ function ReadREP_Miss_List( i,cb) {
                 connection.release();
             });
     });
+
 }
 
 function ReadREP_Unknown_List( i, limit, token, cb) {

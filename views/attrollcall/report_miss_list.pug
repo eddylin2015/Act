@@ -20,13 +20,14 @@ block content
         td= book.rollcall_by
 
   if !books.length
-    p No activity course found.
+    p No item found.
 
-  -var prePageToken = nextPageToken - 200 > 0 ? nextPageToken - 200 : 0
+  -var prePageToken = nextPageToken - 200 > 0 ? nextPageToken - 200 : (nextPageToken - 200 > -99 ? 0 :-1)
   nav
     ul.pager
-      li
-        a(href=`?pageToken=${encodeURIComponent(prePageToken)}`,style="color:black") Prev
+      if prePageToken > 0
+        li 
+          a(href=`?pageToken=${encodeURIComponent(prePageToken)}`,style="color:black") Prev
       if nextPageToken
         li
           a(href=`?pageToken=${encodeURIComponent(nextPageToken)}`,style="color:black") More    

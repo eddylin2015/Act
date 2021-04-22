@@ -18,6 +18,21 @@ function authRequired(req, res, next) {
     next();
 }
 
+function admin_authRequired(req, res, next) {
+    let act_c_id = req.params.book;
+    let fn = req.query.fn ? req.query.fn : "";
+    if (req.user) {
+        req.session.al_pass = act_c_id
+    }
+    if (!req.session.al_pass) {
+        return res.redirect(`/internal/attrollcall/al_login/${act_c_id}?fn=${encodeURI(fn)}`);
+    }
+    if (req.session.al_pass != act_c_id) {
+        return res.redirect(`/internal/attrollcall/al_login/${act_c_id}?fn=${encodeURI(fn)}`);
+    }
+    next();
+}
+
 const router = express.Router();
 
 router.use((req, res, next) => {
@@ -45,7 +60,7 @@ router.get('/grp_cnt_list', authRequired, (req, res, next) => {
             books: entity,
             att_pass: req.session.att_pass,
             sect: req.query.sect,
-            fn:"班總數",
+
         });
     });
 });
@@ -88,6 +103,7 @@ router.get('/leave_list', authRequired, (req, res, next) => {
         });
     });
 });
+
 router.get('/unknown_list', authRequired, (req, res, next) => {
     getModel().ReadREP_Unknown_List(0,100,req.query.pageToken,(err, entity,cursor) => {
         if (err) { next(err); return; }
@@ -102,12 +118,11 @@ router.get('/unknown_list', authRequired, (req, res, next) => {
     });
 });
 
-
 router.get('/myrollcall', authRequired, (req, res, next) => {
     let staf = req.session.att_pass.stud_ref
     let nowtime = fmt_time();
     let data = req.query
-    console.log(data)
+    
     if (data.ACT && data.ACT == "QUERY") {
         getModel().ReadActLessonStafId(data.STUD_REF, (err, entity) => {
             if (err) { next(err); return; }
@@ -117,7 +132,11 @@ router.get('/myrollcall', authRequired, (req, res, next) => {
                 books: entity,
                 fn: "",
                 grp_list: null,
-                att_pass: req.session.att_pass,                
+                att_pass: req.session.att_pass,   
+                rollcall_by: req.session.att_pass.stud_ref,
+                att_pass: req.session.att_pass,            
+                act:"",    
+
             });
         });
     } else {
@@ -141,12 +160,11 @@ router.post('/myrollcall', images.multer.single('image'), authRequired, (req, re
     let alid = 0;
     let staf = req.session.att_pass.stud_ref
     let nowtime = fmt_time();
-    console.log(data)
+    console.log(data);
     getModel().UpdateActLessonStud(data, alid, nowtime, staf, (err, entity) => {
         if (err) { next(err); return; }
         getModel().ReadActLessonStafId(STUD_REF, (err, entity) => {
             if (err) { next(err); return; }
-            console.log(entity)
             res.render('attrollcall/aa_form.pug', {
                 al_id: "",
                 profile: req.user,
@@ -214,7 +232,6 @@ router.post('/al_list/:book/add', authRequired, images.multer.single('image'), (
 });
 
 router.get('/al_list/:book/view/:alid', authRequired, (req, res, next) => {
-    console.log(req.originalUrl)
     let act_c_id = req.params.book;
     let alid = req.params.alid;
     let fn = req.query.fn ? req.query.fn : "";
@@ -274,8 +291,6 @@ router.post('/al_list/:book/edit/:alid', images.multer.single('image'), authRequ
     let alid = req.params.alid;
     let fn = req.query.fn ? req.query.fn : "";
     let data = req.body
-    console.log(data)
-    console.log(req.session.att_pass)
     let staf = req.session.att_pass.stud_ref
     let nowtime = fmt_time();
     getModel().UpdateActLessonStud(data, alid, nowtime, staf, (err, entity) => {

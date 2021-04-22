@@ -8,7 +8,6 @@ const options = {
     database: config.get('ACTMYSQL_DATABASE')
 };
 const pool = mysql.createPool(options);
-
 function ReadStafbyId(STAFID,cb) {
     pool.getConnection(function (err, connection) {
         if (err) {
@@ -23,7 +22,6 @@ function ReadStafbyId(STAFID,cb) {
             });
     });
 }
-
 function ReadActDefbyId(act_c_id, cb) {
     pool.getConnection(function (err, connection) {
         if (err) {
@@ -38,64 +36,6 @@ function ReadActDefbyId(act_c_id, cb) {
             });
     });
 }
-//User_List:User_List,
-function User_List(cb) {
-    pool.getConnection(function (err, connection) {
-        if (err) {
-            cb(err);
-            return;
-        }
-        connection.query(
-            'SELECT * FROM `studinfo` ', [], (err, results) => {
-                if (err) { cb(err); return; }
-                cb(null, results);
-                connection.release();
-            });
-    });
-}
-//User_Update:User_Update,
-async function User_Update(aObj, cb) {
-    pool.getConnection(async function (err, connection) {
-        if (err) { cb(err); return; }
-        let cnt = 0;
-        let alist = Object.keys(aObj);
-        for (let i = 0; i < alist.length; i++) {
-            let val = aObj[alist[i]];
-            let ar_ = alist[i].split('_');
-            let fieldname = ar_[1].replace("-", "_");
-            let actcid = ar_[2];
-            if (fieldname.startsWith("SPK")) {
-                val = val.match(/^[0-9]+[.]*[0-9]*$/);
-                if (val == null) continue;
-            }
-            cnt += await new Promise((resolve, reject) => {
-                connection.query(`update studinfo set ${fieldname}=? where stud_ref=?;`, [val, actcid], (err, res) => {
-                    if (err) { console.log(err); reject(err); }
-                    resolve(100);
-                });
-            });
-        }
-        cb(null, Math.floor(cnt / 100));
-        connection.release();
-    });
-}
-//User_Add:User_Add,
-function User_Add(staf_ref,cb) {
-    pool.getConnection(function (err, connection) {
-        if (err) {
-            cb(err);
-            return;
-        }
-        let data={stud_ref:staf_ref}
-        connection.query(
-            'insert into `studinfo` set  ? ', [data], (err, results) => {
-                if (err) { cb(err); return; }
-                cb(null, results);
-                connection.release();
-            });
-    });
-}
-
 
 function ReadActDef(cb) {
     pool.getConnection(function (err, connection) {
@@ -154,7 +94,6 @@ function CreateActLesson(data, cb) {
         });
     });
 }
-
 async function CloneActLessonStudList(act_c_id, al_id, cb) {
     pool.getConnection(async function (err, connection) {
         let cnt = 0
@@ -176,7 +115,6 @@ async function CloneActLessonStudList(act_c_id, al_id, cb) {
         connection.release();
     });
 }
-
 function ReadActLessons(act_c_id, cb) {
     pool.getConnection(function (err, connection) {
         if (err) {
@@ -191,7 +129,6 @@ function ReadActLessons(act_c_id, cb) {
             });
     });
 }
-
 function ReadActStud(act_c_id, cb) {
     pool.getConnection(function (err, connection) {
         if (err) {
@@ -206,7 +143,6 @@ function ReadActStud(act_c_id, cb) {
             });
     });
 }
-
 function DeleteActStud(act_c_id, as_id, cb) {
     pool.getConnection(function (err, connection) {
         if (err) {
@@ -221,7 +157,6 @@ function DeleteActStud(act_c_id, as_id, cb) {
             });
     });
 }
-
 async function ReadStudByClassSeat(ByClassSeat, act_c_id, fn, cb) {
     pool.getConnection(async function (err, connection) {
         if (err) {
@@ -242,13 +177,13 @@ async function ReadStudByClassSeat(ByClassSeat, act_c_id, fn, cb) {
                             resolve(100);
                         });
                     });
+
                 }
                 ReadActStud(act_c_id, cb)
                 connection.release();
             });
     });
 }
-
 async function UpdateActStud(data, act_c_id, fn, cb) {
     pool.getConnection(async function (err, connection) {
         if (err) { cb(err); return; }
@@ -273,7 +208,6 @@ async function UpdateActStud(data, act_c_id, fn, cb) {
         connection.release();
     });
 }
-
 function ReadActLessonStud(al_id, cb) {
     pool.getConnection(function (err, connection) {
         if (err) {
@@ -288,7 +222,6 @@ function ReadActLessonStud(al_id, cb) {
             });
     });
 }
-
 async function IncActLessonStudByClassSeat(ByClassSeat, act_c_id, al_id,fn, cb) {
     pool.getConnection(async function (err, connection) {
         if (err) {
@@ -303,19 +236,20 @@ async function IncActLessonStudByClassSeat(ByClassSeat, act_c_id, al_id,fn, cb) 
                     row["aa_id"] = 0
                     row["al_id"] = al_id
                     row["act_c_id"] = act_c_id
+                    //row["activeName"] = fn
                     cnt += await new Promise((resolve, reject) => {
                         connection.query(`insert  attrollcall_attend set  ?`, [row], (err, res) => {
                             if (err) { console.log(err); reject(err); }
                             resolve(100);
                         });
                     });
+
                 }
                 ReadActLessonStud(al_id, cb)
                 connection.release();
             });
     });
 }
-
 function DeleteActLessonStud(act_c_id,al_id,aa_id, cb) {
     pool.getConnection(function (err, connection) {
         if (err) {
@@ -370,6 +304,66 @@ function readclassnostud(id, cb) {
     });
 }
 
+
+//User_List:User_List,
+function User_List( limit, token, cb) {
+    token = token ? parseInt(token, 10) : 0;
+    pool.getConnection(function (err, connection) {
+        if (err) {
+            cb(err);
+            return;
+        }
+        connection.query(
+            'SELECT * FROM `studinfo`  LIMIT ? OFFSET ?', [limit, token], (err, results) => {
+                if (err) { cb(err); return; }
+                const hasMore = results.length === limit ? token + results.length : false;
+                cb(null, results, hasMore);
+                connection.release();
+            });
+    });
+}
+//User_Update:User_Update,
+async function User_Update(aObj, cb) {
+    pool.getConnection(async function (err, connection) {
+        if (err) { cb(err); return; }
+        let cnt = 0;
+        let alist = Object.keys(aObj);
+        for (let i = 0; i < alist.length; i++) {
+            let val = aObj[alist[i]];
+            let ar_ = alist[i].split('_');
+            let fieldname = ar_[1].replace("-", "_");
+            let actcid = ar_[2];
+            if (fieldname.startsWith("SPK")) {
+                val = val.match(/^[0-9]+[.]*[0-9]*$/);
+                if (val == null) continue;
+            }
+            cnt += await new Promise((resolve, reject) => {
+                connection.query(`update studinfo set ${fieldname}=? where stud_ref=?;`, [val, actcid], (err, res) => {
+                    if (err) { console.log(err); reject(err); }
+                    resolve(100);
+                });
+            });
+        }
+        cb(null, Math.floor(cnt / 100));
+        connection.release();
+    });
+}
+//User_Add:User_Add,
+function User_Add(staf_ref,cb) {
+    pool.getConnection(function (err, connection) {
+        if (err) {
+            cb(err);
+            return;
+        }
+        let data={stud_ref:staf_ref}
+        connection.query(
+            'insert into `studinfo` set  ? ', [data], (err, results) => {
+                if (err) { cb(err); return; }
+                cb(null, results);
+                connection.release();
+            });
+    });
+}
 module.exports = {
     createSchema: createSchema,
     ReadStafbyId:ReadStafbyId,
@@ -390,7 +384,7 @@ module.exports = {
     ReadStudByClassSeat: ReadStudByClassSeat,
     User_List:User_List,
     User_Update:User_Update,
-    User_Add:User_Add,
+    User_Add:User_Add
 };
 
 if (module === require.main) {

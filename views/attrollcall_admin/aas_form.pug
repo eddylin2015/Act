@@ -10,12 +10,12 @@ block content
       console.log(x)
       ///as_list/:book/delete/:as_id
       url=`/internal/attrollcall_admin/aas_list/#{act_c_id}/#{al_id}/delete/${as_id}`
-      console.log(url)
+      console.log(url);
       $.get( url, function( data ) {
-       alert( JSON.stringify(data) );
+        alert( JSON.stringify(data) );
        x.parentElement.parentElement.style.display="none"
       });
-       
+
        //x.text="已經刪除"
        //document.getElementById("demo")
        

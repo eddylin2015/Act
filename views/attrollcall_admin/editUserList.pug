@@ -19,11 +19,11 @@ block content
           td#MB_H.tdh c_name
           td#MC_H.tdh curr_class
           td#MD_H.tdh curr_seat
-          td#MD_H.tdh key_md
-          td#MD_H.tdh classmaster
-          td#MD_H.tdh grp
-          td#MD_H.tdh sect
-          td#MD_H.tdh idx
+          td#ME_H.tdh key_md
+          td#MF_H.tdh classmaster
+          td#MG_H.tdh grp
+          td#MH_H.tdh sect
+          td#MI_H.tdh idx
         each book in books
           tr
             td.tdh= book.stud_ref
@@ -32,11 +32,21 @@ block content
             td.M(id=`MB_c_name_${book.stud_ref}`,style='text-align:left')= book.c_name
             td.M(id=`MC_curr_class_${book.stud_ref}`,align='right')= book.curr_class
             td.M(id=`MD_curr_seat_${book.stud_ref}`,align='right')= book.curr_seat
-            td.M(id=`MD_key_md_${book.stud_ref}`,align='right')= book.key_md
-            td.M(id=`MD_classmaster_${book.stud_ref}`,align='right')= book.classmaster
-            td.M(id=`MD_grp_${book.stud_ref}`,align='right')= book.grp
-            td.M(id=`MD_sect_${book.stud_ref}`,align='right')= book.sect
-            td.M(id=`MD_idx_${book.stud_ref}`,align='right')= book.idx
+            td.M(id=`ME_key_md_${book.stud_ref}`,align='right')= book.key_md
+            td.M(id=`MF_classmaster_${book.stud_ref}`,align='right')= book.classmaster
+            td.M(id=`MG_grp_${book.stud_ref}`,align='right')= book.grp
+            td.M(id=`MH_sect_${book.stud_ref}`,align='right')= book.sect
+            td.M(id=`MI_idx_${book.stud_ref}`,align='right')= book.idx
+  -var prePageToken = nextPageToken - 200 > 0 ? nextPageToken - 200 : (nextPageToken - 200 > -99 ? 0 :-1)
+
+  if prePageToken >= 0
+    button
+      a(href=`?pageToken=${encodeURIComponent(prePageToken)}`,style="color:black") Prev
+  if nextPageToken
+    button
+      a(href=`?pageToken=${encodeURIComponent(nextPageToken)}`,style="color:black") More    
+
+
   lebal KEY:
   input()#INPUT_KEY
   input(type="button",value="Add_User",onclick="Add_User();")
@@ -60,7 +70,7 @@ block content
     	BindingPastFrm("PastFrm","PastFrmText","EDUTBL");
     	BindingCSVFrm('CSVFrm','CSVFrm_Link','tableContent','data.xls');
     	BindingFunctions("editbtn","savebtn","pastbtn","exportbtn",'readmodebtn');
-    	BindingHead_EditMode(['MA_H','MB_H','MC_H','MD_H']);
+    	BindingHead_EditMode(['MA_H','MB_H','MC_H','MD_H','ME_H','MF_H','MG_H','MH_H','MI_H']);
     	BindingFieldDefsIntegerFields({'MC':'INT'});
     	GenOriginalData();
     	$('#prtbtn').click(function(){

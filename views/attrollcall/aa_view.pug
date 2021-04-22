@@ -16,7 +16,7 @@ block content
       }      
       let cnt=document.getElementById("aa_li_cnt").value;
       var reg = /^\d+$/;
-      if(cnt.match(reg) && (Number(cnt)>0 && Number(cnt) < 100) ){
+      if(cnt.match(reg) && (Number(cnt)>=0 && Number(cnt) < 100) ){
         
       $.post( "#{act}",{cnt:cnt,act:act}, function( data ) {
         //$( ".result" ).html( data );
@@ -27,6 +27,9 @@ block content
         $( "#grp_list" ).html( table_ctx );
       });
       }
+    }
+    function aaaa1(){
+
     }
   link(rel='stylesheet', href='/stylesheets/cool/kidevalform.css')
   h3= `${al_id} ${fn}`
@@ -41,7 +44,7 @@ block content
           td= b_.al_id
           td= b_.classno
           td= b_.cnt
-  a(href=`/internal/attrollcall/al_list/${act_c_id}/edit/${al_id}?fn=${fn}`, class='btn btn-success btn-sm')
+  a(href=`/internal/attrollcall/al_list/${act_c_id}/edit/${al_id}?fn=${fn}`, class='btn btn-success btn-sm',onclick="aaaa();")
     i.glyphicon.glyphicon-edit
     span 登記出席
   style.  
@@ -74,7 +77,7 @@ block content
                 span(class="glyphicon glyphicon-ok")
               label(class="radio-inline")= out_type_list[val] +""
     if !books.length
-      p No activity course found.
+      p No item found.
 
   
 

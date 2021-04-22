@@ -18,6 +18,7 @@ block content
       let ori_list=[]
       let act="add";
       var table = document.getElementById("grp_list");
+      
       for (var i = 0, row; row = table.rows[i]; i++) {
          //for (var j = 0, col; col = row.cells[j]; j++) {  }
          ori_list.push(`${row.cells[0].innerHTML}`)
@@ -25,14 +26,16 @@ block content
       }      
       let cnt=document.getElementById("aa_li_cnt").value;
       var reg = /^\d+$/;
-      if(cnt.match(reg) && (Number(cnt)>0 && Number(cnt) < 100) ){
-      $.post( "#{act}",{cnt:cnt,act:act}, function( data ) {
-        let table_ctx=""
-        for(let r of JSON.parse(data)){
-          table_ctx+=`<tr><td>${r.stud_ref}<td>${r.al_id}<td>${r.classno}<td>${r.cnt}`
-        }
-        $( "#grp_list" ).html( table_ctx );
-      });
+      if("#{act}"!=""){
+          if(cnt.match(reg) && (Number(cnt)>0 && Number(cnt) < 100) ){
+            $.post( "#{act}",{cnt:cnt,act:act}, function( data ) {
+              let table_ctx=""
+              for(let r of JSON.parse(data)){
+                table_ctx+=`<tr><td>${r.stud_ref}<td>${r.al_id}<td>${r.classno}<td>${r.cnt}`
+              }
+              $( "#grp_list" ).html( table_ctx );
+            });
+          }
       }
     }
     $(document).ready(function () {
@@ -101,10 +104,13 @@ block content
       x.value=fmt_time()
     }
     function form_submit(){
-      let staf_ref="#{rollcall_by}"
-      let ori_list=[]
+      let grp_list_flag='#{grp_list}';  
+      let staf_ref="#{rollcall_by}";
+      let ori_list=[];
       let act="add";
       var table = document.getElementById("grp_list");
+      let grg_cnt_flag=table.rows.length==0;
+      console.log(grg_cnt_flag,grp_list_flag);
       for (var i = 0, row; row = table.rows[i]; i++) {
          ori_list.push(`${row.cells[0].innerHTML}`)
          if(row.cells[0].innerHTML==staf_ref) act="update"
@@ -125,8 +131,8 @@ block content
            }
         }
       }); 
-      alert(`${cnt} ${cnt2}`);
-      if(cnt2>0){
+      if(cnt2>20){
+        if("#{act}"!="" && grg_cnt_flag)
         $.post( "#{act}",{cnt:cnt2,act:act}, function( data ) {
         let table_ctx=""
         for(let r of JSON.parse(data)){
@@ -135,6 +141,7 @@ block content
         $( "#grp_list" ).html( table_ctx );
       });
       }
+      alert(`${cnt} ${cnt2}`);
       document.getElementById("formid").submit();
     }
   span 點名總人數:
@@ -181,4 +188,4 @@ block content
 
   button.btn.btn-success(type="bottun", onclick="form_submit();") Save
   if !books.length
-    p No activity course found.
+    p No item found.
